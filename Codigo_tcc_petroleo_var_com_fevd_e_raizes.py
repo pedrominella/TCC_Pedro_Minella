@@ -1,7 +1,7 @@
 
 # ============================================================
 # TCC - Petróleo, combustíveis e IPCA brasileiro
-# Autor: Pedro Franck Minella (adaptado para a sua base)
+# Autor: Pedro Franck Minella 
 # ============================================================
 
 import os
