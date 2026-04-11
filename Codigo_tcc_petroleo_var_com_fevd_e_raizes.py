@@ -99,22 +99,22 @@ def carregar_e_preparar_dados(filepath, sheet_name="Sheet1", start_date="2003-01
     # --------------------------------------------------------
     # PADRONIZAÇÃO DAS SÉRIES EM NÍVEL / ÍNDICE
     # --------------------------------------------------------
-    # Em nível original
-    df["LV_IPCA_Brasil"] = df["IPCA_Brasil"]
+       # --------------------------------------------------------
+    # PADRONIZAÇÃO DAS SÉRIES EM NÍVEL / ÍNDICE
+    # --------------------------------------------------------
+    # Usando diretamente as colunas em nível que já existem na planilha
+    df["LV_IPCA_Brasil"] = df["IPCA_Geral_nivel"]
     df["LV_Cambio"] = df["Cambio"]
     df["LV_Preco_Barril"] = df["Preco_Barril"]
     df["LV_Atividade"] = df["Atividade"]
-    df["LV_GasolinaA"] = df["GasolinaABrasil_media"]
+    df["LV_IPCA_Trans"] = df["IPCA_Trans_nivel"]
+    df["LV_GasolinaA"] = df["GasolinaABrasil_media_nivel"]
+    df["LV_Gasolina"] = df["Gasolina_nivel"]
+    df["LV_Etanol"] = df["Etanol_nivel"]
+    df["LV_Oleo_diesel"] = df["Oleo_diesel_nivel"]
 
-    # Reconstruídas a partir de variação mensal (%)
-    # IPCA Transporte não está em nível na planilha, então reconstruímos um índice.
-    df["LV_IPCA_Trans"] = reconstruir_indice_por_variacao(df["Var_IPCA_Trans"])
-    df["LV_Gasolina"] = reconstruir_indice_por_variacao(df["Gasolina"])
-    df["LV_Etanol"] = reconstruir_indice_por_variacao(df["Etanol"])
-    df["LV_Oleo_diesel"] = reconstruir_indice_por_variacao(df["Oleo_diesel"])
-
-    # Alias útil: se você quiser chamar diesel de óleo diesel
-    df["LV_Diesel"] = df["LV_Oleo_diesel"]
+    # Alias útil
+    df["LV_Diesel"] = df["LV_Oleo_diesel"] 
 
     # Lista final de séries padronizadas em nível
     level_cols = [
