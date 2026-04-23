@@ -40,7 +40,7 @@ warnings.simplefilter("ignore", InterpolationWarning)
 # ------------------------------------------------------------
 # PASTAS DE SAÍDA
 # ------------------------------------------------------------
-BASE_OUT = Path("output_tcc_var")
+BASE_OUT = Path("output_tcc_var_com_fevd_e_raizes_Modelo1")
 DIR_GRAFICOS = BASE_OUT / "graficos"
 DIR_GRAFICOS_NIVEL = DIR_GRAFICOS / "01_nivel"
 DIR_GRAFICOS_LOG = DIR_GRAFICOS / "02_log"

@@ -23,7 +23,7 @@ DATA_INICIO = "2003-01-01"
 MAXLAGS = 12
 HORIZONTE_IRF = 24
 
-OUTDIR = Path("output_tcc_var_selic_ativ_espec")
+OUTDIR = Path("output_tcc_var_selic_ativ_espec_Modelo5")
 (OUTDIR / "graficos" / "01_nivel").mkdir(parents=True, exist_ok=True)
 (OUTDIR / "graficos" / "02_ln").mkdir(parents=True, exist_ok=True)
 (OUTDIR / "graficos" / "03_dln").mkdir(parents=True, exist_ok=True)

@@ -33,7 +33,7 @@ warnings.simplefilter("ignore", InterpolationWarning)
 # ------------------------------------------------------------
 # PASTAS DE SAÍDA
 # ------------------------------------------------------------
-BASE_OUT = Path("output_tcc_vecm")
+BASE_OUT = Path("output_tcc_vecm_Modelo2")
 DIR_GRAFICOS = BASE_OUT / "graficos"
 DIR_RESID = DIR_GRAFICOS / "01_residuos"
 DIR_IRF = DIR_GRAFICOS / "02_irf"
