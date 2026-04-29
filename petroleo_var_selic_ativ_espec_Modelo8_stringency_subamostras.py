@@ -224,10 +224,21 @@ def carregar_preparar_base():
     stringency = load_stringency_monthly(STRINGENCY_FILE, work.index)
     work["Stringency"] = pd.to_numeric(stringency["Stringency"], errors="coerce")
 
+    # Ordem econômica usada para gráficos, testes e transformações.
+    # Para identificação por Cholesky nas IRFs, a lógica é:
+    # petróleo internacional -> câmbio -> combustíveis -> condições domésticas -> inflação.
     base_vars = [
-        "IPCA_Geral_nivel", "IPCA_Trans_nivel", "GasolinaA_nivel", "Gasolina_nivel",
-        "Etanol_nivel", "Oleo_diesel_nivel", "Cambio", "Preco_Barril",
-        "Atividade", "Selic", "Expectativa_Inflacao"
+        "Preco_Barril",
+        "Cambio",
+        "GasolinaA_nivel",
+        "Gasolina_nivel",
+        "Etanol_nivel",
+        "Oleo_diesel_nivel",
+        "Atividade",
+        "Expectativa_Inflacao",
+        "Selic",
+        "IPCA_Trans_nivel",
+        "IPCA_Geral_nivel",
     ]
 
     for c in base_vars:
@@ -300,8 +311,8 @@ def rodar_subamostra(work_full, base_vars, map_cols, nome_sub, data_ini, data_fi
                 work["DLN_Cambio"],
                 work[f"DLN_{comb_col}"],
                 work["DLN_Atividade"],
-                work["DLN_Selic"],
                 work["DLN_Expectativa_Inflacao"],
+                work["DLN_Selic"],
                 work[f"DLN_{resp_col}"],
                 exog,
             ], axis=1).dropna()
@@ -312,8 +323,8 @@ def rodar_subamostra(work_full, base_vars, map_cols, nome_sub, data_ini, data_fi
                 "DLN_Cambio",
                 "DLN_Combustivel",
                 "DLN_Atividade",
-                "DLN_Selic",
                 "DLN_Expectativa_Inflacao",
+                "DLN_Selic",
                 "DLN_IPCA_Resposta",
             ]
             X = model_df.iloc[:, 7:].copy()
@@ -359,8 +370,8 @@ def rodar_subamostra(work_full, base_vars, map_cols, nome_sub, data_ini, data_fi
                 work["LN_Cambio"],
                 work[f"LN_{comb_col}"],
                 work["LN_Atividade"],
-                work["LN_Selic"],
                 work["LN_Expectativa_Inflacao"],
+                work["LN_Selic"],
                 work[f"LN_{resp_col}"],
             ], axis=1).dropna()
             level_data.columns = [
@@ -368,8 +379,8 @@ def rodar_subamostra(work_full, base_vars, map_cols, nome_sub, data_ini, data_fi
                 "LN_Cambio",
                 "LN_Combustivel",
                 "LN_Atividade",
-                "LN_Selic",
                 "LN_Expectativa_Inflacao",
+                "LN_Selic",
                 "LN_IPCA_Resposta",
             ]
 
@@ -388,8 +399,8 @@ def rodar_subamostra(work_full, base_vars, map_cols, nome_sub, data_ini, data_fi
                 "DLN_Cambio",
                 "DLN_Combustivel",
                 "DLN_Atividade",
-                "DLN_Selic",
                 "DLN_Expectativa_Inflacao",
+                "DLN_Selic",
             ]:
                 try:
                     test = res.test_causality("DLN_IPCA_Resposta", [cause], kind="f")
@@ -473,8 +484,8 @@ def rodar_subamostra(work_full, base_vars, map_cols, nome_sub, data_ini, data_fi
                     "DLN_Cambio",
                     "DLN_Combustivel",
                     "DLN_Atividade",
-                    "DLN_Selic",
                     "DLN_Expectativa_Inflacao",
+                    "DLN_Selic",
                 ]
                 for imp in impulses:
                     fig = irf.plot(impulse=imp, response="DLN_IPCA_Resposta")
