@@ -1,0 +1,26 @@
+RELATÓRIO DO MODELO 9
+=====================
+
+O Modelo 9 usa a série Oil supply news shock como fonte externa de identificação.
+
+Modelo 9A:
+- Estima Local Projections diretas usando o choque externo de oferta de petróleo.
+- Interpretação: resposta dos combustíveis e da inflação a uma surpresa externa de oferta.
+
+Modelo 9B:
+- Usa Oil supply news shock como instrumento para dln_petroleo_brl.
+- Primeiro estágio: dln_petroleo_brl em função do instrumento e controles.
+- Segundo estágio: respostas acumuladas usando petróleo em reais instrumentado.
+
+Como avaliar o Modelo 9B:
+- Primeiro olhe o arquivo resumo_modelo9_primeiro_estagio.xlsx.
+- Se o F-stat do primeiro estágio for maior que 10, o instrumento é mais defensável.
+- Se o F-stat for menor que 10, trate o LP-IV com cautela e use o Modelo 9A como evidência externa.
+
+Corte Petrobras:
+- O regime Petrobras foi definido com corte em 2016-09-01, isto é, setembro de 2016.
+- A dummy regime_petrobras_pos_set2016 vale 0 antes do corte e 1 a partir de 2016-09.
+
+Observação:
+- linearmodels disponível nesta execução: True
+- Se não estiver disponível, o script usa 2SLS manual aproximado.
