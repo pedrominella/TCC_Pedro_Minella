@@ -1,4 +1,8 @@
 ﻿h,nobs,first_stage_f,first_stage_pvalue,coef_instrumento,pvalor_instrumento,r2_first_stage,arquivo,h_ref,instrumento_forte_regra_10
+0.0,266.0,128.34596113758963,6.79409209403239e-24,0.5393701814204114,9.428819885456561e-30,0.6172715035562735,output_petroleo_lp_modelo9\resumo_modelo9_primeiro_estagio.csv,0,True
+3.0,263.0,126.74115459841585,1.3005017028042846e-23,0.5365949664919272,2.1165457915620706e-29,0.6163800051469981,output_petroleo_lp_modelo9\resumo_modelo9_primeiro_estagio.csv,3,True
+6.0,260.0,123.50083378824898,4.222558706905314e-23,0.5379042565614593,1.083407325645877e-28,0.6164095614385803,output_petroleo_lp_modelo9\resumo_modelo9_primeiro_estagio.csv,6,True
+12.0,254.0,119.26613302231132,2.157889667953848e-22,0.5355960219487748,9.15802290787862e-28,0.6156850543202197,output_petroleo_lp_modelo9\resumo_modelo9_primeiro_estagio.csv,12,True
 0.0,266.0,128.34596113758963,6.79409209403239e-24,0.5393701814204114,9.428819885456561e-30,0.6172715035562735,output_petroleo_lp_modelo9\B_lpiv_oil_supply_news\primeiro_estagio_petroleo_brl_iv_oil_supply_news_para_diesel.csv,0,True
 3.0,263.0,126.74115459841585,1.3005017028042846e-23,0.5365949664919272,2.1165457915620706e-29,0.6163800051469981,output_petroleo_lp_modelo9\B_lpiv_oil_supply_news\primeiro_estagio_petroleo_brl_iv_oil_supply_news_para_diesel.csv,3,True
 6.0,260.0,123.50083378824898,4.222558706905314e-23,0.5379042565614593,1.083407325645877e-28,0.6164095614385803,output_petroleo_lp_modelo9\B_lpiv_oil_supply_news\primeiro_estagio_petroleo_brl_iv_oil_supply_news_para_diesel.csv,6,True
