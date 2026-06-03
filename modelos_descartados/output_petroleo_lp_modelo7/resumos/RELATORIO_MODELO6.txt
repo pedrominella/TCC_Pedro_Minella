@@ -1,0 +1,14 @@
+RELATÓRIO DO MODELO 7
+=====================
+
+O Modelo 7 segue o padrão de leitura do Modelo 5, com CONFIG_COLUNAS explícito.
+Choque principal: Brent em reais = Brent em dólar multiplicado pelo câmbio.
+Modelo principal: Local Projections acumuladas com 3 defasagens.
+Robustez: 6 defasagens nas relações principais.
+Regimes Petrobras, corte out/2016: pré-outubro/2016 e pós-outubro/2016.
+LP-IV: Oil Supply News Shock usado apenas como robustez de identificação.
+Inferência: HAC/Newey-West com maxlags = max(3, h+1).
+Gráficos: salvos em output_petroleo_lp_modelo7/graficos.
+
+Interpretação recomendada:
+Os resultados devem ser lidos como evidência dinâmica reduzida. A evidência causal mais forte fica restrita ao exercício LP-IV, que deve ser tratado como robustez. O resultado central esperado é maior transmissão para combustíveis e IPCA Transportes, com resposta menor, menos persistente ou menos precisa no IPCA Geral.

@@ -1,0 +1,28 @@
+MAPEAMENTO USADO NO MODELO LP
+============================================================
+
+Coluna de data detectada: Data
+Arquivo Selic usado: STP-20260429165342557.csv
+Coluna Selic diária usada: 432 - Taxa de juros - Meta Selic definida pelo Copom - % a.a.
+Coluna de meta de inflação usada: None
+
+IPCA_Geral: IPCA_Geral_nivel
+IPCA_Transporte: IPCA_Trans_nivel
+GasolinaA: GasolinaABrasil_media_nivel
+Gasolina: Gasolina_nivel
+Etanol: Etanol_nivel
+Oleo_diesel: Oleo_diesel_nivel
+Cambio: Cambio
+Preco_Barril: Preco_Barril
+Atividade: Atividade
+Expectativa_Inflacao: espectativa_inflacao
+Meta_Inflacao: None
+
+ESPECIFICAÇÃO
+============================================================
+Horizonte máximo: 24
+Lags dos controles: 3
+Choque padronizado: True
+Erros-padrão: HAC/Newey-West
+Selic: média mensal da meta diária, transformada em base 100 e usada como LN_Selic.
+Meta de inflação: transformada em base 100 e usada como LN_Meta_Inflacao exógena.
