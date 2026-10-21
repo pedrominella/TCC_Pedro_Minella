@@ -1,0 +1,9 @@
+Busca da data de quebra com controle global = CPI cheio dos EUA
+(refeito em 01/10/2026 com a serie de gasolina A da ANP sem tributos federais; versoes anteriores em resultados/_antes_anp e _antes_semtrib)
+
+conjunto          data        estatistica  critico_95  p_boot  intervalo
+4 principais      2017-03-01  67.09        51.09       0.00    2016-04 a 2021-02
+5 com refinaria   2017-03-01  109.77       63.36       0.00    2015-02 a 2021-02
+so refinaria      2016-11-01  44.46        17.78       0.00    2014-12 a 2019-03
+
+p ajustado por selecao, h=0: gasolina_refinaria 0.000 | gasolina_consumidor 0.000 | etanol 0.254 | diesel 0.003 | ipca_geral 0.130 | ipca_transportes 0.013

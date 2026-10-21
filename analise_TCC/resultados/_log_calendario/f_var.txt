@@ -1,0 +1,7 @@
+   ipca_geral             bandas com 400 réplicas válidas
+   ipca_transportes       bandas com 400 réplicas válidas
+   gasolina_refinaria     bandas com 400 réplicas válidas
+   gasolina_consumidor    bandas com 400 réplicas válidas
+   diesel                 bandas com 400 réplicas válidas
+   etanol                 bandas com 400 réplicas válidas
+   var_cholesky_regimes.png

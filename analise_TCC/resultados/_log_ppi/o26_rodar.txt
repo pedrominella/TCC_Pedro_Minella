@@ -1,0 +1,36 @@
+  gasolina_refinaria
+  gasolina_consumidor
+  etanol
+  diesel
+  ipca_geral
+  ipca_transportes
+
+=== resposta NAO ACUMULADA: a inflacao do mes t+h ===
+h                       0      1      2      3      4      5      6      7      8      9      10     11     12
+variavel                                                                                                      
+diesel               0.845  0.646  0.297  0.013  0.218  0.176  0.168  0.070  0.331  0.078  0.048 -0.322 -0.231
+gasolina_consumidor  0.786  0.560 -0.061  0.115 -0.208 -0.030 -0.173 -0.202  0.087  0.032 -0.076 -0.512 -0.233
+ipca_geral           0.057  0.069  0.020  0.044 -0.013  0.007 -0.032 -0.006  0.010  0.024  0.026 -0.011 -0.006
+ipca_transportes     0.249  0.206  0.043  0.070 -0.034  0.036 -0.029 -0.016  0.082  0.055  0.064 -0.133 -0.056
+
+p-valor:
+h                       0      1      2      3      4      5      6      7      8      9      10     11     12
+variavel                                                                                                      
+diesel               0.000  0.003  0.128  0.945  0.194  0.356  0.343  0.683  0.019  0.468  0.635  0.076  0.195
+gasolina_consumidor  0.000  0.030  0.793  0.548  0.256  0.882  0.492  0.449  0.717  0.850  0.640  0.009  0.220
+ipca_geral           0.023  0.003  0.456  0.081  0.556  0.738  0.225  0.797  0.624  0.157  0.160  0.385  0.799
+ipca_transportes     0.001  0.013  0.548  0.360  0.571  0.558  0.713  0.821  0.250  0.364  0.249  0.018  0.388
+
+meses com resposta NEGATIVA e significativa a 10% (a correcao):
+           variavel  h  coeficiente  p_valor
+gasolina_consumidor 11       -0.512    0.009
+             diesel 11       -0.322    0.076
+   ipca_transportes 11       -0.133    0.018
+
+=== por regime, IPCA Geral e IPCA Transportes ===
+h                               0      1      2      3      4      5      6      7      8      9      10     11     12
+variavel         alvo                                                                                                 
+ipca_geral       choque_pos  0.176  0.159  0.015  0.028 -0.054  0.048 -0.051 -0.015  0.049  0.064  0.070  0.010  0.008
+                 choque_pre  0.005  0.029  0.021  0.049  0.001 -0.012 -0.027 -0.004 -0.013 -0.012 -0.025 -0.039 -0.027
+ipca_transportes choque_pos  0.675  0.631  0.149  0.095 -0.211  0.028 -0.286 -0.123  0.178  0.167  0.173 -0.164 -0.069
+                 choque_pre  0.065  0.024 -0.001  0.062  0.043  0.041  0.078  0.031  0.033 -0.033 -0.050 -0.095 -0.038

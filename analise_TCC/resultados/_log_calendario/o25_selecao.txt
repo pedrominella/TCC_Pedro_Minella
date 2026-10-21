@@ -1,0 +1,47 @@
+  gasolina_refinaria
+  gasolina_consumidor
+  etanol
+  diesel
+  ipca_geral
+  ipca_transportes
+
+=== p que MINIMIZA cada criterio de informacao (h=0, amostra comum) ===
+                     aic  bic  hq
+variavel                         
+diesel                 2    1   2
+etanol                 1    1   1
+gasolina_consumidor    2    1   1
+gasolina_refinaria     2    1   2
+ipca_geral             4    1   2
+ipca_transportes       2    1   1
+
+moda entre as seis variaveis:
+  AIC: p = 2  (mediana 2.0)
+  BIC: p = 1  (mediana 1.0)
+  HQ: p = 1  (mediana 1.5)
+
+=== menor p que deixa o residuo branco a 5% (BG robusto, q=1, 6 e 12) ===
+  diesel                 p = 1
+  etanol                 p = 1
+  gasolina_consumidor    p = 1
+  gasolina_refinaria     p = 1
+  ipca_geral             p = 1
+  ipca_transportes       p = 1
+
+=== ultimo p cujo bloco de defasagens ainda e conjuntamente significativo (10%) ===
+  diesel                 p = 2
+  etanol                 p = 12
+  gasolina_consumidor    nenhum bloco significativo
+  gasolina_refinaria     p = 11
+  ipca_geral             p = 11
+  ipca_transportes       p = 5
+
+=== o coeficiente do choque em h=0 depende de p? ===
+p                       1      2      3      4      5      6      7      8      9      10     11     12
+variavel                                                                                               
+diesel               0.836  0.860  0.848  0.885  0.918  0.914  0.882  0.898  0.852  0.838  0.878  0.895
+etanol               0.601  0.628  0.721  0.751  0.731  0.777  0.753  0.736  0.694  0.738  0.718  0.549
+gasolina_consumidor  0.770  0.784  0.797  0.820  0.831  0.774  0.844  0.873  0.874  0.870  0.902  0.833
+gasolina_refinaria   1.715  1.660  1.582  1.645  1.595  1.599  1.407  1.423  1.450  1.400  1.554  1.525
+ipca_geral           0.052  0.053  0.059  0.061  0.057  0.051  0.052  0.050  0.053  0.052  0.061  0.055
+ipca_transportes     0.242  0.242  0.253  0.263  0.264  0.231  0.243  0.255  0.252  0.249  0.256  0.239

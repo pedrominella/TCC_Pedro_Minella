@@ -1,0 +1,92 @@
+[
+ {
+  "slide": "Capa",
+  "segundos": 30,
+  "texto": "Boa tarde. Meu nome é Pedro Minella, sou aluno de Ciências Econômicas do Ibmec Brasília, e esta é a minha pesquisa de iniciação científica, orientada pelo professor Silvio Michael de Azevedo Costa. A pergunta do trabalho é simples: quanto de uma alta no preço internacional do petróleo chega à inflação brasileira, e em quanto tempo. A resposta curta é que depende da regra de preços dos combustíveis, e é isso que vou mostrar."
+ },
+ {
+  "slide": "01 Introdução",
+  "segundos": 75,
+  "texto": "Por que essa pergunta importa? Primeiro, porque os conflitos no Oriente Médio recolocaram o petróleo no centro do debate, e o Banco Central precisa saber de antemão quanto de um choque vai virar inflação. Segundo, porque o choque é comum: em 51 dos 272 meses da amostra, a variação do Brent igualou ou superou um desvio-padrão, cerca de duas vezes por ano. Terceiro, porque no Brasil a regra mudou: a Petrobras vendeu abaixo da referência de 2011 a 2014 e adotou a paridade de importação em 2016, por decisão administrativa. E a literatura deixa duas lacunas: trata a regulação de preços como fixa em cada país e raramente mede quanto do efeito passa, de fato, pelos combustíveis. São essas duas lacunas que o trabalho ocupa."
+ },
+ {
+  "slide": "02 A pergunta",
+  "segundos": 45,
+  "texto": "A pergunta tem duas dimensões: magnitude e velocidade. O gráfico mostra a gasolina na refinaria, em vermelho, e ao consumidor, em laranja, contra a gasolina do Golfo dos Estados Unidos e o Brent, todos em reais e com base 100 em 2003. Até 2016 a linha vermelha anda em degraus, descolada da referência. Depois, passa a acompanhá-la de perto."
+ },
+ {
+  "slide": "03 Por que o Brasil é um caso especial",
+  "segundos": 75,
+  "texto": "Esta é a cronologia. De 2011 a 2014, contenção de preços, com perda de receita estimada em cerca de R$ 98 bilhões para a Petrobras. Em 14 de outubro de 2016, o anúncio da paridade de importação. Os dados, como vou mostrar, datam a mudança em março de 2017, cinco meses depois. Entre 2018 e 2022 houve intervenções pontuais, e em maio de 2023 a paridade terminou. O gráfico de baixo é a variação mensal do preço na refinaria: antes, o preço ficou parado em 16,6% dos meses, com variação mediana de 0,17%; depois, nenhum mês parado, e a variação mediana sobe para 4,27%. É o retrato de um preço administrado que vira um preço indexado."
+ },
+ {
+  "slide": "04 O que a literatura já sabe",
+  "segundos": 75,
+  "texto": "O que a literatura já sabe. Primeiro, quanto chega: em 72 economias, Choi e coautores estimam que uma alta de 10% no petróleo eleva a inflação em cerca de 0,4 ponto no ano, e que esse repasse caiu com a melhora da política monetária. Segundo, nem todo choque é igual: Kilian mostra que choques de oferta, de demanda global e de demanda precaucional têm efeitos diferentes. Terceiro, a regra importa: em até 125 economias, Akcura mostra que países com preço regulado repassam muito menos. Mas esses trabalhos tratam a regulação como fixa em cada país. O Brasil permite ver a mesma economia antes e depois de uma mudança de regra."
+ },
+ {
+  "slide": "05 Dados e método",
+  "segundos": 75,
+  "texto": "Os dados são mensais, de janeiro de 2003 a setembro de 2025, 273 meses. O choque é a variação do Brent em dólares, padronizada: um choque típico é uma alta de 10,7%. Estimo seis séries, da gasolina na refinaria ao IPCA cheio. O método tem quatro passos: medir o choque; localizar a mudança com um teste de quebra, cuja data é estimada pelos próprios dados; comparar os regimes com projeções locais; e rastrear o efeito da refinaria até o IPCA, separando o canal dos combustíveis."
+ },
+ {
+  "slide": "06 O modelo",
+  "segundos": 90,
+  "texto": "Esta é a equação. À esquerda, quanto o nível de preços subiu h meses depois do choque. O coeficiente em verde é o repasse antes da mudança; o em vermelho, o repasse depois. O delta capta a mudança de nível entre os regimes, e os controles são três defasagens, câmbio, atividade, Selic, expectativa de inflação, sazonalidade e pandemia. Estimo uma regressão para cada horizonte, de 0 a 12 meses, nas seis séries. A data de corte é março de 2017, estimada pelos dados. E a pergunta central é o teste de Wald: o repasse antes é igual ao repasse depois? Se não for, a regra mudou o repasse."
+ },
+ {
+  "slide": "07 A data não foi escolhida, foi estimada",
+  "segundos": 75,
+  "texto": "Como chegamos a março de 2017? Calculei a estatística de quebra para cada data candidata. O máximo é em março de 2017, com 58,1, contra um valor crítico de 42,9 a 5%. A faixa cinza mostra as datas compatíveis com os dados, de abril de 2016 a fevereiro de 2021. Ou seja, a data não é precisa ao mês, mas a mudança é clara. E se eu impuser a data do anúncio, outubro de 2016, o resultado se repete."
+ },
+ {
+  "slide": "08 O resultado central",
+  "segundos": 90,
+  "texto": "Este é o resultado central. No mês do choque, o repasse ao IPCA era de 0,005 ponto percentual antes da mudança. Depois, fica entre 0,088 e 0,176, conforme o tratamento da pandemia. Mais importante que o número é o padrão: antes da paridade, nenhuma das 18 estimativas, que são seis séries em três horizontes, se distingue de zero. Depois, as 18 são significativas. E há um ponto metodológico: se eu não separar os regimes, o teste conjunto não rejeita a ausência de efeito no IPCA, com p de 0,194. A média da amostra inteira esconde a mudança."
+ },
+ {
+  "slide": "09 O impacto no IPCA e no IPCA Transportes",
+  "segundos": 60,
+  "texto": "Olhando o IPCA cheio e o grupo Transportes lado a lado. No IPCA cheio, o impacto passa de 0,005 para 0,176, e o teste de Wald rejeita a igualdade com p de 0,001. No IPCA Transportes, que contém os combustíveis, o efeito é maior: passa de 0,065 para 0,675, com p menor que 0,001. Nas duas séries, a curva verde fica colada no zero e a vermelha salta já no primeiro mês."
+ },
+ {
+  "slide": "10 Quando e por onde o efeito passa",
+  "segundos": 60,
+  "texto": "Quando e por onde o efeito passa. Quando: rápido, quase toda a resposta aparece nos dois primeiros meses. Por onde: pelos combustíveis. Em três meses, o canal dos combustíveis carrega 0,003 ponto antes e 0,249 depois. O gráfico mostra a gasolina na refinaria e ao consumidor: depois da mudança, a refinaria responde forte já no mês do choque, e a bomba acompanha. No próximo slide, separo esse efeito em dois caminhos."
+ },
+ {
+  "slide": "11 Primeiro e segundo efeito",
+  "segundos": 60,
+  "texto": "Dentro do canal dos combustíveis, há dois caminhos. O primeiro efeito é aritmético: gasolina, diesel e etanol estão na cesta do IPCA, então, se sobem, o índice sobe sem que nenhum outro preço mude. O segundo efeito é econômico: o combustível mais caro encarece frete e insumos, e preços que não são combustível também sobem. Calculo o primeiro efeito pelos pesos da cesta e estimo o segundo depois de tirar essa parcela do índice. No mês do choque, o primeiro efeito responde por 63% do total; em três meses, os dois se igualam; em seis meses, o segundo efeito já é 87%, e em doze, 80%. A ressalva: o segundo efeito não é significativo em três meses, com p de 0,124, e a significância depende do cenário de pesos. O que é firme é a trajetória: o efeito da cesta é imediato e se esgota; o de custos é mais lento e persiste."
+ },
+ {
+  "slide": "12 De que tamanho é isso",
+  "segundos": 90,
+  "texto": "De que tamanho é isso? Fiz um exercício contrafactual: apliquei os choques de cada ano às duas regras e acumulei a contribuição ano a ano, reiniciando em janeiro, como o IPCA anual. Em 2021, a regra de paridade acrescentou 1,72 ponto, cerca de 18% do IPCA do ano, que foi de 10,06%. Em 2022, 1,15 ponto, cerca de 21% do IPCA de 5,79%. Em 2020, ano em que o petróleo despencou na pandemia, o sinal se inverte: pela conta, a paridade tirou 2,31 pontos do IPCA em relação à regra anterior. Mas esse é o número mais incerto: o modelo foi estimado sem os meses da pandemia e trata altas e quedas como iguais; com o índice de Oxford, seriam 0,63 ponto. Os intervalos são largos e o exercício é de equilíbrio parcial: mede a contribuição do petróleo, mantido o resto, e não diz qual teria sido a inflação."
+ },
+ {
+  "slide": "13 O Brasil no mapa",
+  "segundos": 60,
+  "texto": "O Brasil no mapa. Com a base do Banco Mundial que acompanha o trabalho de Akcura, comparei 65 países na alta de abril de 2020 a junho de 2022, do vale ao pico do petróleo, a mesma janela daquele trabalho. Países com preço desregulado repassaram, na mediana, 0,798 da variação internacional; os regulados, 0,288, um repasse quase três vezes menor. O Brasil aparece com 0,868, entre os 25% maiores e em sexto na América Latina. É o mesmo mecanismo, agora entre países."
+ },
+ {
+  "slide": "14 O resultado à luz da literatura",
+  "segundos": 75,
+  "texto": "Comparando com a literatura, em pontos por alta de 10% no petróleo. Antes da mudança, o Brasil era um caso extremo: Choi e coautores, com dados de 2000 a 2015, colocam o Brasil em último entre 71 economias. Depois, o Brasil se aproxima dos Estados Unidos: o IPCA sobe 0,33 ponto no pico, contra 0,4% no índice americano segundo Känzig. E no canal dos combustíveis, a estimativa de 0,23 em três meses cai dentro da calibração do Banco Central para 2021, de 0,20 a 0,27. Os métodos diferem, então é uma comparação de ordem de grandeza."
+ },
+ {
+  "slide": "15 Robustez",
+  "segundos": 75,
+  "texto": "Robustez. Primeiro, a endogeneidade: o Brent responde à demanda mundial, que também afeta a inflação brasileira, então trato o choque como endógeno, e os coeficientes como associações condicionais. Se o viés for igual nos dois regimes, ele se cancela na diferença; é uma hipótese. O Brasil é tomador de preço, e a proporção de meses de alta até cai depois, de 59,8% para 54,4%. Segundo, a variável instrumental. Para o choque, a surpresa de oferta da OPEP, de Känzig, é instrumento fraco, com F entre 2,2 e 6,6. Para os combustíveis, a margem de refino do diesel é forte depois de 2017, com F entre 19 e 31 do primeiro mês em diante, embora fique em 6,9 no próprio mês do choque. Com ela, o efeito dos combustíveis sobre o IPCA aparece em um e dois meses, sem efeito sobre os demais preços em até seis meses. Por fim, outras especificações: com a data do anúncio, 0,155; até o fim da paridade, 0,214; com a pandemia por índice de rigor, 0,088; e controlando a inflação global, 0,170. Em todas, o contraste se mantém."
+ },
+ {
+  "slide": "16 Conclusão",
+  "segundos": 60,
+  "texto": "Para concluir: o repasse não é um parâmetro constante nas economias; no Brasil, ele é consequência da regra de formação de preços. Quanto: no mês do choque, o repasse ao IPCA passou de 0,005 para algo entre 0,088 e 0,176 ponto. Quando: quase todo nos dois primeiros meses. Por onde: pelos combustíveis. A implicação é que a calibragem do repasse precisa ser revista sempre que a regra muda, e que médias de amostras longas podem esconder regimes diferentes."
+ },
+ {
+  "slide": "Obrigado",
+  "segundos": 15,
+  "texto": "Obrigado. Fico à disposição para as perguntas."
+ }
+]

@@ -1,0 +1,11 @@
+Busca da data de quebra com controle global = CPI cheio dos EUA
+(arquivo xlsx sobrescrito pela rodada seguinte; numeros registrados aqui)
+
+conjunto          data        estatistica  critico_95  p_boot  intervalo
+4 principais      2017-03-01  67.09        51.09       0.00    2016-04 a 2021-02
+5 com refinaria   2017-03-01  99.64        74.57       0.00    2016-04 a 2021-02
+so refinaria      2018-11-01  36.65        28.01       0.01    2016-12 a 2021-01
+
+p ajustado por selecao, h=0: gasolina_consumidor 0.000 | diesel 0.003
+                             ipca_transportes 0.013 | gasolina_refinaria 0.020
+rejeicoes a 5% com ajuste de selecao: 4 de 18 (mesmas 4 series do baseline)

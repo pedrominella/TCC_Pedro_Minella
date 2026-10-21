@@ -1,0 +1,4 @@
+  voltas_esquema.png
+  residuos_refinaria.png
+  antes   n=166  desvio  2.28  autocorr(1) -0.011
+  depois  n=103  desvio  4.39  autocorr(1) -0.029

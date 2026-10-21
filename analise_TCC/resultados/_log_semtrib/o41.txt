@@ -1,0 +1,176 @@
+
+ONDA 4.1 -- O EFEITO CAUSAL DA PPI, COM INICIO E FIM
+
+A politica de Preco de Paridade de Importacao foi instituida em 2016, teve o
+repasse detectado a partir de mar/2017 (quebra estimada em onda3_3) e foi
+ENCERRADA em 16 de maio de 2023, quando a Petrobras anunciou nova estrategia
+comercial. A especificacao de dois regimes usada ate aqui junta o periodo PPI
+com o periodo posterior ao fim da politica, e portanto SUBESTIMA o efeito.
+
+Este script estima tres regimes:
+
+    pre   : t <  mar/2017                    (preco administrado)
+    ppi   : mar/2017 <= t < jun/2023         (paridade de importacao)
+    pos   : t >= jun/2023                    (fim da paridade)
+
+    100*[ln P(t+h) - ln P(t-1)]
+        = a + b_pre(h)*choque*1{pre} + b_ppi(h)*choque*1{ppi}
+            + b_pos(h)*choque*1{pos} + d1(h)*1{ppi} + d2(h)*1{pos}
+        + soma_{i=1..3}[g_i dlnP(t-i) + f_i choque(t-i) + O_i X(t-i)]
+        + 11 indicadoras mensais + indicadoras de pandemia da janela de h
+        + u(t,h)
+
+POR QUE ISSO IDENTIFICA MELHOR QUE UMA QUEBRA SO
+  Uma quebra unica e compativel com "algo mudou em 2017". Duas quebras em
+  sentidos OPOSTOS, cada uma casada com uma decisao de politica datada, e um
+  desenho liga-desliga: o repasse deve subir em 2017 e cair em 2023. Uma causa
+  concorrente teria de explicar as duas viradas, nas duas datas certas.
+
+POR QUE A DATA DE 2023 E IMPOSTA, E NAO ESTIMADA
+  O anuncio e publico e datado (16/05/2023), logo a data e exogena ao ajuste do
+  modelo e NAO ha problema de inferencia pos-selecao: o p-valor convencional
+  vale. Em 2017 a data foi estimada porque a implementacao foi gradual, e la o
+  p-valor precisou de ajuste por selecao (onda3_3). Usa-se jun/2023, primeiro mes
+  cheio sob a nova politica, com mai/2023 como robustez.
+
+RESSALVA DE POTENCIA, REPORTADA E NAO ESCONDIDA
+  O terceiro regime tem poucos meses, e o numero cai com h porque a dependente
+  precisa de t+h. O script imprime o n efetivo de CADA regime em CADA horizonte.
+  Coeficiente do regime pos com n pequeno e impreciso por construcao: leia o
+  erro-padrao, nao so o ponto.
+
+Inferencia identica a do modelo principal: HAC de Newey-West (Bartlett, banda
+h+1, correcao T/(T-K)), banda uniforme sup-t plug-in, e wild block bootstrap
+apenas no critico dos testes conjuntos.
+
+Uso: python onda4_1_tres_regimes.py
+
+corte do fim da PPI: jun/2023   meses: pre=170 ppi=75 pos=28
+  gasolina_refinaria: sup-t = pre-PPI 2.34, PPI 2.35, pos-PPI 2.41
+  gasolina_consumidor: sup-t = pre-PPI 2.35, PPI 2.31, pos-PPI 2.34
+  etanol: sup-t = pre-PPI 2.27, PPI 2.31, pos-PPI 2.19
+  diesel: sup-t = pre-PPI 2.27, PPI 2.16, pos-PPI 2.12
+  ipca_geral: sup-t = pre-PPI 2.09, PPI 2.34, pos-PPI 2.33
+  ipca_transportes: sup-t = pre-PPI 2.20, PPI 2.34, pos-PPI 2.40
+
+=== respostas por regime, horizontes do artigo ===
+regime                   PPI  pos-PPI  pre-PPI
+variavel            h                         
+diesel              0  2.385    1.916    0.206
+                    1  4.682    4.562    0.144
+                    3  4.040    6.127    0.067
+                    6  3.874    6.820    0.416
+etanol              0  1.371    1.324    0.410
+                    1  3.810    1.164    1.008
+                    3  3.131    0.451    0.811
+                    6  0.794   -1.156    2.246
+gasolina_consumidor 0  2.164    1.428    0.233
+                    1  4.419    2.055    0.210
+                    3  3.104    0.824    0.094
+                    6  0.134    1.123    0.647
+gasolina_refinaria  0  5.877    1.975    0.199
+                    1  9.360    3.250   -0.057
+                    3  5.048   -0.530    0.038
+                    6  3.415    3.538    0.350
+ipca_geral          0  0.214   -0.004    0.005
+                    1  0.423    0.059    0.033
+                    3  0.370    0.008    0.098
+                    6  0.209    0.009    0.063
+ipca_transportes    0  0.717    0.476    0.064
+                    1  1.450    0.993    0.088
+                    3  1.247    0.902    0.112
+                    6  0.472    0.979    0.340
+
+=== n efetivo do regime pos-PPI, por horizonte ===
+ h  n_pre  n_ppi  n_pos
+ 0    166     75     28
+ 1    166     75     27
+ 2    166     75     26
+ 3    166     75     25
+ 4    166     75     24
+ 5    166     75     23
+ 6    166     75     22
+ 7    166     75     21
+ 8    166     75     20
+ 9    166     75     19
+10    166     75     18
+11    166     75     17
+12    166     75     16
+
+=== Wald por horizonte ===
+teste                  ppi = pos  pre = pos  pre = ppi
+variavel            h                                 
+diesel              0      0.640      0.070      0.000
+                    1      0.947      0.014      0.000
+                    3      0.446      0.014      0.007
+etanol              0      0.971      0.454      0.238
+                    1      0.250      0.940      0.032
+                    3      0.426      0.916      0.148
+gasolina_consumidor 0      0.308      0.021      0.000
+                    1      0.050      0.008      0.000
+                    3      0.124      0.471      0.024
+gasolina_refinaria  0      0.006      0.180      0.000
+                    1      0.001      0.038      0.000
+                    3      0.013      0.695      0.007
+ipca_geral          0      0.022      0.922      0.000
+                    1      0.001      0.760      0.000
+                    3      0.047      0.570      0.090
+ipca_transportes    0      0.327      0.025      0.000
+                    1      0.222      0.001      0.000
+                    3      0.511      0.076      0.009
+
+=== testes conjuntos h=0..6 (critico por bootstrap) ===
+           variavel                                teste  estatistica  p_bootstrap  critico_95_bootstrap
+ gasolina_refinaria    ligou em 2017 (pre = ppi, h=0..6)      128.079        0.000                19.571
+ gasolina_refinaria desligou em 2023 (ppi = pos, h=0..6)       43.090        0.000                16.432
+gasolina_consumidor    ligou em 2017 (pre = ppi, h=0..6)       56.669        0.000                20.986
+gasolina_consumidor desligou em 2023 (ppi = pos, h=0..6)       16.159        0.149                19.328
+             etanol    ligou em 2017 (pre = ppi, h=0..6)       23.157        0.006                17.820
+             etanol desligou em 2023 (ppi = pos, h=0..6)        5.860        0.743                18.203
+             diesel    ligou em 2017 (pre = ppi, h=0..6)       74.132        0.000                23.947
+             diesel desligou em 2023 (ppi = pos, h=0..6)        5.759        0.993                21.587
+         ipca_geral    ligou em 2017 (pre = ppi, h=0..6)       46.535        0.000                19.474
+         ipca_geral desligou em 2023 (ppi = pos, h=0..6)       29.263        0.000                16.851
+   ipca_transportes    ligou em 2017 (pre = ppi, h=0..6)       37.302        0.000                21.698
+   ipca_transportes desligou em 2023 (ppi = pos, h=0..6)        2.760        0.951                18.511
+
+=== checagem: corte alem do fim da amostra reproduz 2 regimes ===
+corte do fim da PPI: fora da amostra   meses: pre=170 ppi=103 pos=0
+  gasolina_refinaria: sup-t = pre-PPI 2.33, PPI 2.36, pos-PPI 2.59
+  gasolina_consumidor: sup-t = pre-PPI 2.35, PPI 2.32, pos-PPI 2.55
+  etanol: sup-t = pre-PPI 2.27, PPI 2.32, pos-PPI 2.57
+  diesel: sup-t = pre-PPI 2.27, PPI 2.15, pos-PPI 2.53
+  ipca_geral: sup-t = pre-PPI 2.08, PPI 2.34, pos-PPI 2.57
+  ipca_transportes: sup-t = pre-PPI 2.19, PPI 2.34, pos-PPI 2.54
+desvio maximo contra onda3_3: 3.722e-14  (OK)
+
+=== robustez: corte em mai/2023 em vez de jun/2023 ===
+corte do fim da PPI: mai/2023   meses: pre=170 ppi=74 pos=29
+  gasolina_refinaria: sup-t = pre-PPI 2.34, PPI 2.35, pos-PPI 2.39
+  gasolina_consumidor: sup-t = pre-PPI 2.36, PPI 2.32, pos-PPI 2.26
+  etanol: sup-t = pre-PPI 2.28, PPI 2.32, pos-PPI 2.24
+  diesel: sup-t = pre-PPI 2.27, PPI 2.15, pos-PPI 2.15
+  ipca_geral: sup-t = pre-PPI 2.09, PPI 2.34, pos-PPI 2.23
+  ipca_transportes: sup-t = pre-PPI 2.19, PPI 2.33, pos-PPI 2.35
+regime                   PPI  pos-PPI  pre-PPI
+variavel            h                         
+diesel              0  2.275    2.419    0.205
+                    1  4.467    5.454    0.140
+                    3  4.039    6.027    0.066
+gasolina_consumidor 0  2.212    1.432    0.241
+                    1  4.634    1.802    0.232
+                    3  3.452   -0.050    0.115
+gasolina_refinaria  0  5.942    2.188    0.211
+                    1  9.421    3.718   -0.038
+                    3  5.200   -0.608    0.051
+ipca_geral          0  0.217    0.021    0.006
+                    1  0.428    0.100    0.034
+                    3  0.375    0.067    0.100
+ipca_transportes    0  0.721    0.492    0.065
+                    1  1.485    0.931    0.091
+                    3  1.318    0.642    0.112
+  tres_regimes_ipca_geral.png
+  tres_regimes_ipca_transportes.png
+  tres_regimes_gasolina_consumidor.png
+  tres_regimes_diesel.png
+  tres_regimes_gasolina_refinaria.png

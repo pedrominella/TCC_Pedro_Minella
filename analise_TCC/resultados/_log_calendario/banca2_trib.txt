@@ -1,0 +1,49 @@
+  indicadoras tributarias: {'pis_cofins_2017': 2, 'subvencao_diesel_2018': 7, 'desoneracao_2022': 3, 'reoneracao_2023': 1} meses
+  tributos ipca_geral
+  tributos ipca_transportes
+  tributos gasolina_consumidor
+  tributos diesel
+
+=== A. TRIBUTOS ===
+  variavel                h  pre s/  pre c/  pos s/  pos c/  wald s/  wald c/
+  ipca_geral              0   0.005   0.005   0.176   0.185    0.001    0.001
+  ipca_geral              1   0.034   0.035   0.356   0.373    0.000    0.001
+  ipca_geral              3   0.101   0.104   0.314   0.305    0.160    0.250
+  ipca_transportes        0   0.065   0.064   0.675   0.726    0.000    0.000
+  ipca_transportes        1   0.090   0.084   1.366   1.475    0.000    0.000
+  ipca_transportes        3   0.115   0.107   1.194   1.239    0.006    0.016
+  gasolina_consumidor     0   0.238   0.245   2.031   2.212    0.000    0.000
+  gasolina_consumidor     1   0.222   0.206   3.977   4.358    0.000    0.000
+  gasolina_consumidor     3   0.118   0.092   2.732   2.889    0.028    0.029
+  diesel                  0   0.205   0.214   2.308   2.058    0.000    0.000
+  diesel                  1   0.145   0.149   4.646   4.369    0.000    0.000
+  diesel                  3   0.068   0.043   4.318   3.979    0.001    0.006
+  choque Brent em dólares
+  choque Brent em reais
+
+=== C. CHOQUE EM REAIS ===
+  variavel                h  pre USD  pre BRL  pos USD  pos BRL  wald USD  wald BRL
+  ipca_geral              0    0.005    0.006    0.176    0.133     0.001     0.006
+  ipca_geral              1    0.034    0.046    0.356    0.280     0.000     0.004
+  ipca_geral              3    0.101    0.112    0.314    0.227     0.160     0.391
+  ipca_transportes        0    0.065    0.057    0.675    0.559     0.000     0.000
+  ipca_transportes        1    0.090    0.104    1.366    1.140     0.000     0.000
+  ipca_transportes        3    0.115    0.129    1.194    0.896     0.006     0.033
+  gasolina_consumidor     0    0.238    0.219    2.031    1.684     0.000     0.000
+  gasolina_consumidor     1    0.222    0.258    3.977    3.283     0.000     0.000
+  gasolina_consumidor     3    0.118    0.270    2.732    2.057     0.028     0.162
+  diesel                  0    0.205    0.188    2.308    2.127     0.000     0.000
+  diesel                  1    0.145    0.191    4.646    4.133     0.000     0.000
+  diesel                  3    0.068    0.246    4.318    3.769     0.001     0.001
+  corr(choque Brent USD, variação cambial) no regime anterior: -0.368
+  corr(choque Brent USD, variação cambial) no regime posterior: -0.314
+
+  segmento anterior: 98 datas candidatas
+    2006-01  soma de Wald = 9.95
+    2006-05  soma de Wald = 9.28
+    2006-06  soma de Wald = 8.90
+
+  segmento posterior: 31 datas candidatas
+    2021-02  soma de Wald = 7.64
+    2020-09  soma de Wald = 6.17
+    2020-11  soma de Wald = 6.17

@@ -1,0 +1,6 @@
+  regime_resposta_ipca_geral.png
+  regime_resposta_ipca_transportes.png
+  regime_resposta_gasolina_consumidor.png
+  regime_resposta_diesel.png
+
+conferencia h=0 (acumulada deve igualar a nao acumulada): desvio maximo 0.00e+00  (OK)

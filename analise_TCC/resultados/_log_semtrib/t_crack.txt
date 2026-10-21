@@ -1,0 +1,61 @@
+CRACK SPREAD, derivado no Golfo menos Brent, US$/barril
+  gasolina  2003-01 a 2025-09 | crack medio  10.6 | R2 sobre o Brent 0.709 | correlacao de cs_ort com o choque +0.000
+  diesel    2006-06 a 2025-09 | crack medio  17.5 | R2 sobre o Brent 0.737 | correlacao de cs_ort com o choque +0.000
+  conferencia da identidade ln/dlog em serie existente: desvio 0.0e+00
+
+====================================================================================
+1. PRIMEIRO ESTAGIO   o instrumento move o preco domestico do combustivel?
+   F robusto sobre o instrumento excluido, h = 0, controles do modelo principal
+====================================================================================
+produto    endogena               amostra          F       coef       ep      n
+gasolina   gasolina_consumidor    pos-2016      5.54      1.129    0.480    109
+                                  pre-2016      1.44      0.141    0.118    160
+
+diesel     diesel                 pos-2016      0.27      0.135    0.258    109
+                                  pre-2016      0.90      0.169    0.178    122
+
+====================================================================================
+2. FORMA REDUZIDA   o instrumento move precos que NAO sao combustivel?
+   Dispensa primeiro estagio. E o objeto da segunda volta.
+====================================================================================
+
+  instrumento: margem de refino do GASOLINA
+  desfecho               h                 pos-2016               pre-2016
+  ipca_transportes       0         0.3625** (0.020)       0.0036   (0.939)
+                         1         0.6230** (0.012)       0.1069   (0.103)
+                         3         0.3168   (0.415)       0.0520   (0.556)
+
+  naocomercializaveis    0        -0.0123   (0.807)      -0.0133   (0.442)
+                         1        -0.0309   (0.679)       0.0182   (0.410)
+                         3        -0.0978   (0.334)      -0.0000   (1.000)
+
+  comercializaveis       0         0.0018   (0.971)      -0.0246   (0.237)
+                         1         0.0190   (0.805)      -0.0171   (0.643)
+                         3        -0.1308   (0.291)      -0.0118   (0.840)
+
+  ipca_geral             0         0.0567   (0.212)      -0.0117   (0.426)
+                         1         0.1120*  (0.093)       0.0234   (0.361)
+                         3        -0.0369   (0.788)       0.0163   (0.640)
+
+
+  instrumento: margem de refino do DIESEL
+  desfecho               h                 pos-2016               pre-2016
+  ipca_transportes       0         0.1339   (0.223)      -0.0053   (0.946)
+                         1         0.2770   (0.153)       0.0581   (0.601)
+                         3         0.5634   (0.110)       0.1108   (0.541)
+
+  naocomercializaveis    0         0.0001   (0.997)      -0.0274   (0.508)
+                         1         0.0166   (0.734)      -0.0238   (0.637)
+                         3        -0.0268   (0.754)       0.0938   (0.172)
+
+  comercializaveis       0         0.0278   (0.460)       0.0671   (0.146)
+                         1         0.0286   (0.634)       0.1764*  (0.063)
+                         3         0.0533   (0.596)       0.2210   (0.284)
+
+  ipca_geral             0         0.0244   (0.423)       0.0109   (0.733)
+                         1         0.0131   (0.773)       0.0721   (0.121)
+                         3         0.0765   (0.490)       0.1400   (0.190)
+
+Leitura. F abaixo de 10 e instrumento fraco pelo criterio usual; abaixo de 5 a
+via do IV nao se sustenta. Na forma reduzida, o que interessa e o CONTRASTE
+entre regimes: sinal no pos e nada no pre e a assinatura da regra de paridade.

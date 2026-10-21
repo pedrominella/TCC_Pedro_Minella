@@ -1,0 +1,56 @@
+  ipca_geral
+  ipca_transportes
+  diesel
+  gasolina_consumidor
+
+==========================================================================
+CONTRASTE: os dez meses de 2020 FORA (janela) contra DENTRO (rigor, sem_ctrl)
+==========================================================================
+
+--- ipca_geral ---
+  h = 0
+    modo        simétrico |     alta    baixa   p(sim)     N
+    janela          0.176 |    0.141    0.207    0.686   269
+    rigor           0.088 |    0.048    0.110    0.587   269
+    sem_ctrl        0.088 |    0.103    0.078    0.770   269
+  h = 1
+    modo        simétrico |     alta    baixa   p(sim)     N
+    janela          0.356 |    0.370    0.335    0.888   268
+    rigor           0.215 |    0.154    0.246    0.617   268
+    sem_ctrl        0.215 |    0.239    0.196    0.731   268
+
+--- ipca_transportes ---
+  h = 0
+    modo        simétrico |     alta    baixa   p(sim)     N
+    janela          0.675 |    0.639    0.698    0.887   269
+    rigor           0.370 |    0.353    0.372    0.945   269
+    sem_ctrl        0.370 |    0.358    0.368    0.965   269
+  h = 1
+    modo        simétrico |     alta    baixa   p(sim)     N
+    janela          1.366 |    1.208    1.493    0.734   268
+    rigor           0.831 |    0.707    0.886    0.725   268
+    sem_ctrl        0.831 |    0.731    0.872    0.709   268
+
+--- diesel ---
+  h = 0
+    modo        simétrico |     alta    baixa   p(sim)     N
+    janela          2.308 |    4.118    0.623    0.002   269
+    rigor           0.957 |    2.117    0.266    0.038   269
+    sem_ctrl        0.958 |    1.638    0.548    0.188   269
+  h = 1
+    modo        simétrico |     alta    baixa   p(sim)     N
+    janela          4.646 |    7.289    2.039    0.004   268
+    rigor           2.457 |    4.030    1.508    0.094   268
+    sem_ctrl        2.458 |    3.371    1.896    0.261   268
+
+--- gasolina_consumidor ---
+  h = 0
+    modo        simétrico |     alta    baixa   p(sim)     N
+    janela          2.031 |    1.226    2.735    0.227   269
+    rigor           1.137 |    0.869    1.265    0.653   269
+    sem_ctrl        1.137 |    0.826    1.290    0.529   269
+  h = 1
+    modo        simétrico |     alta    baixa   p(sim)     N
+    janela          3.977 |    2.137    5.661    0.196   268
+    rigor           2.660 |    1.695    3.163    0.337   268
+    sem_ctrl        2.660 |    1.770    3.120    0.236   268

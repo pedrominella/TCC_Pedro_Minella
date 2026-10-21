@@ -1,0 +1,4 @@
+  figura gasolina_consumidor
+  figura diesel
+  figura ipca_transportes
+  figura ipca_geral

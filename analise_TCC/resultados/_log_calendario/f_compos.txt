@@ -1,0 +1,3 @@
+   composicao_choques.png
+   regime anterior   n=169 | altas 59.8% | média das altas +0.570 | média das baixas -0.765
+   regime posterior  n=103 | altas 54.4% | média das altas +0.723 | média das baixas -0.817

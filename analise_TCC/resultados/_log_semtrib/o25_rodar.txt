@@ -1,0 +1,89 @@
+  gasolina_refinaria
+  gasolina_consumidor
+  etanol
+  diesel
+  ipca_geral
+  ipca_transportes
+
+=== (1) escada de defasagens, amostra COMUM, horizontes do artigo ===
+lags                       3      6      12
+variavel            h                      
+diesel              0   0.848  0.914  0.895
+                    3   1.393  1.771  1.701
+                    6   1.826  2.236  1.887
+                    12  1.555  1.893  1.538
+etanol              0   0.721  0.777  0.549
+                    3   1.599  1.998  2.262
+                    6   1.820  2.556  1.657
+                    12  0.750  0.740  0.225
+gasolina_consumidor 0   0.797  0.774  0.833
+                    3   0.987  1.099  1.240
+                    6   0.561  0.671  0.654
+                    12 -0.005 -0.091 -0.035
+gasolina_refinaria  0   1.693  1.687  1.654
+                    3   1.416  2.183  1.640
+                    6   1.551  1.891  1.701
+                    12  1.178  1.584  1.217
+ipca_geral          0   0.059  0.051  0.055
+                    3   0.170  0.192  0.230
+                    6   0.120  0.139  0.172
+                    12  0.088  0.083  0.152
+ipca_transportes    0   0.253  0.231  0.239
+                    3   0.450  0.495  0.571
+                    6   0.403  0.424  0.418
+                    12  0.308  0.293  0.275
+
+p-valor correspondente:
+lags                       3      6      12
+variavel            h                      
+diesel              0   0.000  0.000  0.000
+                    3   0.006  0.003  0.021
+                    6   0.013  0.014  0.025
+                    12  0.026  0.010  0.048
+etanol              0   0.043  0.040  0.175
+                    3   0.045  0.022  0.011
+                    6   0.061  0.006  0.078
+                    12  0.492  0.492  0.846
+gasolina_consumidor 0   0.000  0.000  0.000
+                    3   0.038  0.052  0.058
+                    6   0.298  0.219  0.344
+                    12  0.995  0.894  0.965
+gasolina_refinaria  0   0.000  0.000  0.000
+                    3   0.048  0.003  0.053
+                    6   0.055  0.031  0.028
+                    12  0.274  0.136  0.226
+ipca_geral          0   0.018  0.050  0.028
+                    3   0.015  0.024  0.006
+                    6   0.196  0.211  0.161
+                    12  0.484  0.582  0.264
+ipca_transportes    0   0.001  0.002  0.004
+                    3   0.016  0.027  0.037
+                    6   0.072  0.082  0.163
+                    12  0.282  0.334  0.447
+
+=== sensibilidade: quanto o coeficiente muda de 3 para 6 e 12 defasagens ===
+  amostra comum   : mediana |dif| relativa  3->6 = 0.08  3->12 = 0.14
+  amostra propria : mediana |dif| relativa  3->6 = 0.09  3->12 = 0.15
+  vereditos a 10% que mudam de 3 para 6 defasagens: 7 de 78
+  vereditos a 10% que mudam de 3 para 12 defasagens: 10 de 78
+
+=== (2) Breusch-Godfrey em h=0 (unico horizonte interpretavel) ===
+                    bg_classico_p               bg_robusto_p              
+bg_lags                        1      6      12           1      6      12
+variavel                                                                  
+diesel                      0.026  0.399  0.565        0.039  0.353  0.513
+etanol                      0.533  0.688  0.513        0.532  0.729  0.666
+gasolina_consumidor         0.024  0.260  0.175        0.078  0.704  0.818
+gasolina_refinaria          0.039  0.209  0.361        0.225  0.682  0.717
+ipca_geral                  0.036  0.365  0.689        0.048  0.355  0.642
+ipca_transportes            0.151  0.499  0.672        0.231  0.795  0.966
+  rejeicoes a 5% (classico): 4 de 18
+  rejeicoes a 5% (robusto ): 2 de 18
+
+Modelos com 6 e 12 defasagens resolvem o que sobra em 3?
+bg_lags      1   6   12
+lags_modelo            
+3             2   0   0
+6             1   1   1
+12            1   1   1
+(valores = quantas das 6 variaveis rejeitam a 5% no teste robusto)

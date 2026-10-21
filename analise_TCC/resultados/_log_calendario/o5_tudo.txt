@@ -1,0 +1,22 @@
+== A) QUANTILICA
+   quantilica: gasolina_refinaria      30s
+   quantilica: gasolina_consumidor     50s
+   quantilica: etanol                  65s
+   quantilica: diesel                  104s
+   quantilica: ipca_geral              1574s
+   quantilica: ipca_transportes        3080s
+== B) ROBUSTA / LAD
+   robusta: gasolina_refinaria
+   robusta: gasolina_consumidor
+   robusta: etanol
+   robusta: diesel
+   robusta: ipca_geral
+   robusta: ipca_transportes
+== C) VAR CHOLESKY
+   VAR: gasolina_refinaria
+   VAR: gasolina_consumidor
+   VAR: etanol
+   VAR: diesel
+   VAR: ipca_geral
+   VAR: ipca_transportes
+saida em C:\Users\pedro\OneDrive\Documentos\TCC_python\TCC_artigo_v2\resultados\modelo_11_alternativos

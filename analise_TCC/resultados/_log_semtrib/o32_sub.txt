@@ -1,0 +1,68 @@
+  mar/2017  gasolina_refinaria
+  mar/2017  gasolina_consumidor
+  mar/2017  etanol
+  mar/2017  diesel
+  mar/2017  ipca_geral
+  mar/2017  ipca_transportes
+  set/2016  gasolina_refinaria
+  set/2016  gasolina_consumidor
+  set/2016  etanol
+  set/2016  diesel
+  set/2016  ipca_geral
+  set/2016  ipca_transportes
+
+=== (E1) teste DIRETO da restricao de dinamica comum ===
+H0: no modelo totalmente interagido, as interacoes regime x (defasagens de y,
+    defasagens do choque, controles) sao conjuntamente nulas.
+
+  corte mar/2017: rejeicoes a 10% = 57 de 78 | a 5% = 53 de 78
+           variavel  h  gl_restricao  wald_restricao  p_restricao_qui2
+ gasolina_refinaria  0            18         27.7058            0.0667
+ gasolina_refinaria  3            18         76.5703            0.0000
+ gasolina_refinaria  6            18         67.3664            0.0000
+gasolina_consumidor  0            18         17.7045            0.4753
+gasolina_consumidor  3            18         22.7882            0.1989
+gasolina_consumidor  6            18         53.9667            0.0000
+             etanol  0            18         16.9026            0.5298
+             etanol  3            18         18.2249            0.4409
+             etanol  6            18         46.6130            0.0002
+             diesel  0            18         29.6247            0.0413
+             diesel  3            18         55.7080            0.0000
+             diesel  6            18         38.0938            0.0038
+         ipca_geral  0            18         32.9045            0.0171
+         ipca_geral  3            18         20.7152            0.2940
+         ipca_geral  6            18         19.7930            0.3446
+   ipca_transportes  0            18         36.5068            0.0061
+   ipca_transportes  3            18         30.1641            0.0359
+   ipca_transportes  6            18         36.3528            0.0064
+
+  corte set/2016: rejeicoes a 10% = 59 de 78 | a 5% = 55 de 78
+           variavel  h  gl_restricao  wald_restricao  p_restricao_qui2
+ gasolina_refinaria  0            18         32.3570            0.0199
+ gasolina_refinaria  3            18         68.6758            0.0000
+ gasolina_refinaria  6            18         77.7483            0.0000
+gasolina_consumidor  0            18         17.7200            0.4742
+gasolina_consumidor  3            18         23.6716            0.1661
+gasolina_consumidor  6            18         51.6716            0.0000
+             etanol  0            18         18.4019            0.4295
+             etanol  3            18         16.7304            0.5417
+             etanol  6            18         43.1763            0.0008
+             diesel  0            18         30.8995            0.0296
+             diesel  3            18         57.8968            0.0000
+             diesel  6            18         41.2752            0.0014
+         ipca_geral  0            18         36.2769            0.0065
+         ipca_geral  3            18         26.2755            0.0936
+         ipca_geral  6            18         23.9379            0.1571
+   ipca_transportes  0            18         34.3241            0.0115
+   ipca_transportes  3            18         32.6628            0.0183
+   ipca_transportes  6            18         37.7193            0.0042
+
+=== magnitude: interacao x subamostra (DESCRITIVO, sem p-valor) ===
+  mar/2017 pre: correlacao 0.907 | mediana |dif| 0.334 | mediana |dif| relativa 0.92
+  mar/2017 pos: correlacao 0.884 | mediana |dif| 0.499 | mediana |dif| relativa 0.34
+  set/2016 pre: correlacao 0.913 | mediana |dif| 0.416 | mediana |dif| relativa 1.05
+  set/2016 pos: correlacao 0.907 | mediana |dif| 0.489 | mediana |dif| relativa 0.29
+
+Leitura: a restricao E rejeitada, mas o coeficiente de interesse quase nao se
+move. A redacao correta e 'a restricao e rejeitada e as subamostras entram como
+robustez', nao 'a restricao nao e binding'.

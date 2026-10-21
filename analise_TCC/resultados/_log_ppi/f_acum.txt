@@ -1,0 +1,4 @@
+   acumulado_vs_mensal.png
+   h=0  acumulado 0.176 | mensal 0.176  (coincidem por construcao)
+   h=1  acumulado 0.356 | mensal 0.159  (2 meses contra 1)
+   soma das mensais ate h=1: 0.335

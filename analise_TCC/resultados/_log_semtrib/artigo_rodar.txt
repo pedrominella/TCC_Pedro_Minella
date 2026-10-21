@@ -1,0 +1,264 @@
+==============================================================================
+REESTIMANDO COM CORTE IMPOSTO EM 2016-09-01 (anuncio da PPI)
+  saida: resultados_artigo
+==============================================================================
+
+>>> onda2_8_teulings_zubanov
+  gasolina_refinaria
+  gasolina_consumidor
+  etanol
+  diesel
+  ipca_geral
+  ipca_transportes
+
+VERIFICACOES
+  h=0 identico nas duas versoes: desvio maximo 0.00e+00  (OK)
+  amostra igual nas duas versoes: OK
+
+=== AMOSTRA CHEIA: coeficiente sem e com leads ===
+           variavel  h  sem leads  com leads      dif  dif_pct
+             diesel  0      0.845      0.845    0.000    0.000
+             diesel  1      1.468      1.389   -0.080   -5.433
+             diesel  2      1.523      1.384   -0.139   -9.152
+             diesel  3      1.418      1.256   -0.163  -11.479
+             diesel  6      1.857      1.730   -0.127   -6.815
+             diesel 12      1.662      1.993    0.331   19.925
+             etanol  0      0.710      0.710    0.000    0.000
+             etanol  1      1.726      1.653   -0.073   -4.242
+             etanol  2      1.486      1.294   -0.191  -12.879
+             etanol  3      1.486      1.350   -0.136   -9.164
+             etanol  6      1.690      1.735    0.045    2.670
+             etanol 12      0.790      1.472    0.683   86.462
+gasolina_consumidor  0      0.786      0.786    0.000    0.000
+gasolina_consumidor  1      1.331      1.222   -0.109   -8.188
+gasolina_consumidor  2      1.102      0.971   -0.131  -11.879
+gasolina_consumidor  3      0.952      0.856   -0.096  -10.090
+gasolina_consumidor  6      0.470      0.585    0.115   24.390
+gasolina_consumidor 12     -0.069      0.262    0.331  478.710
+ gasolina_refinaria  0      1.695      1.695    0.000    0.000
+ gasolina_refinaria  1      2.343      1.999   -0.344  -14.683
+ gasolina_refinaria  2      2.209      1.950   -0.259  -11.715
+ gasolina_refinaria  3      1.411      1.114   -0.297  -21.052
+ gasolina_refinaria  6      1.555      1.601    0.047    3.009
+ gasolina_refinaria 12      1.247      1.952    0.704   56.465
+         ipca_geral  0      0.057      0.057    0.000    0.000
+         ipca_geral  1      0.129      0.117   -0.012   -9.175
+         ipca_geral  2      0.140      0.126   -0.014  -10.131
+         ipca_geral  3      0.172      0.157   -0.015   -8.608
+         ipca_geral  6      0.122      0.135    0.013   10.592
+         ipca_geral 12      0.107      0.150    0.042   39.349
+   ipca_transportes  0      0.249      0.249    0.000    0.000
+   ipca_transportes  1      0.461      0.427   -0.034   -7.370
+   ipca_transportes  2      0.443      0.397   -0.046  -10.381
+   ipca_transportes  3      0.449      0.411   -0.038   -8.372
+   ipca_transportes  6      0.401      0.456    0.056   13.901
+   ipca_transportes 12      0.342      0.539    0.197   57.671
+
+=== SIGNIFICANCIA: quantas das 78 respostas de amostra cheia ===
+  sem leads   pontual 51/78 | uniforme 34/78 | c_uniforme medio 2.277
+  com leads   pontual 57/78 | uniforme 37/78 | c_uniforme medio 2.251
+
+=== REGIME: coeficiente posterior e Wald de igualdade ===
+                       coef_pos              wald_p          
+versao                com leads sem leads com leads sem leads
+variavel            h                                        
+diesel              0     2.182     2.182     0.000     0.000
+                    1     4.291     4.335     0.000     0.000
+                    3     4.380     3.975     0.000     0.003
+                    6     4.665     3.812     0.002     0.049
+etanol              0     1.240     1.240     0.272     0.272
+                    1     3.112     3.143     0.067     0.071
+                    3     2.798     2.316     0.149     0.408
+                    6     1.022     0.374     0.628     0.284
+gasolina_consumidor 0     1.948     1.948     0.000     0.000
+                    1     3.664     3.704     0.000     0.000
+                    3     2.853     2.421     0.013     0.058
+                    6     0.458     0.033     0.913     0.667
+gasolina_refinaria  0     5.031     5.031     0.000     0.000
+                    1     7.427     7.583     0.000     0.000
+                    3     4.556     3.766     0.001     0.032
+                    6     4.003     2.976     0.007     0.159
+ipca_geral          0     0.153     0.153     0.006     0.006
+                    1     0.308     0.313     0.002     0.003
+                    3     0.301     0.255     0.149     0.381
+                    6     0.219     0.137     0.307     0.841
+ipca_transportes    0     0.634     0.634     0.000     0.000
+                    1     1.243     1.256     0.000     0.000
+                    3     1.223     1.047     0.002     0.026
+                    6     0.709     0.436     0.397     0.913
+
+horizontes com Wald abaixo de 10%, por versao:
+versao
+com leads    42
+sem leads    34
+
+>>> onda2_6_resposta_nao_acumulada
+  gasolina_refinaria
+  gasolina_consumidor
+  etanol
+  diesel
+  ipca_geral
+  ipca_transportes
+
+=== resposta NAO ACUMULADA: a inflacao do mes t+h ===
+h                       0      1      2      3      4      5      6      7      8      9      10     11     12
+variavel                                                                                                      
+diesel               0.845  0.646  0.297  0.013  0.218  0.176  0.168  0.070  0.331  0.078  0.048 -0.322 -0.231
+gasolina_consumidor  0.786  0.560 -0.061  0.115 -0.208 -0.030 -0.173 -0.202  0.087  0.032 -0.076 -0.512 -0.233
+ipca_geral           0.057  0.069  0.020  0.044 -0.013  0.007 -0.032 -0.006  0.010  0.024  0.026 -0.011 -0.006
+ipca_transportes     0.249  0.206  0.043  0.070 -0.034  0.036 -0.029 -0.016  0.082  0.055  0.064 -0.133 -0.056
+
+p-valor:
+h                       0      1      2      3      4      5      6      7      8      9      10     11     12
+variavel                                                                                                      
+diesel               0.000  0.003  0.128  0.945  0.194  0.356  0.343  0.683  0.019  0.468  0.635  0.076  0.195
+gasolina_consumidor  0.000  0.030  0.793  0.548  0.256  0.882  0.492  0.449  0.717  0.850  0.640  0.009  0.220
+ipca_geral           0.023  0.003  0.456  0.081  0.556  0.738  0.225  0.797  0.624  0.157  0.160  0.385  0.799
+ipca_transportes     0.001  0.013  0.548  0.360  0.571  0.558  0.713  0.821  0.250  0.364  0.249  0.018  0.388
+
+meses com resposta NEGATIVA e significativa a 10% (a correcao):
+           variavel  h  coeficiente  p_valor
+gasolina_consumidor 11       -0.512    0.009
+             diesel 11       -0.322    0.076
+   ipca_transportes 11       -0.133    0.018
+
+=== por regime, IPCA Geral e IPCA Transportes ===
+h                               0      1      2      3      4      5      6      7      8      9      10     11     12
+variavel         alvo                                                                                                 
+ipca_geral       choque_pos  0.153  0.142  0.003  0.017 -0.058  0.045 -0.063 -0.005  0.045  0.059  0.069  0.008  0.006
+                 choque_pre  0.008  0.031  0.027  0.056  0.006 -0.012 -0.019 -0.007 -0.012 -0.010 -0.028 -0.037 -0.026
+ipca_transportes choque_pos  0.634  0.571  0.124  0.043 -0.179 -0.000 -0.282 -0.101  0.204  0.149  0.173 -0.151 -0.060
+                 choque_pre  0.055  0.023  0.002  0.084  0.037  0.053  0.091  0.026  0.010 -0.027 -0.060 -0.106 -0.048
+
+>>> onda2_4_canal_combustiveis
+  amostra cheia  ipca_geral
+  amostra cheia  ipca_transportes
+  por regime     ipca_geral
+  por regime     ipca_transportes
+
+identidade canal = soma(delta_j * b_j): desvio maximo 5.94e-13  (OK)
+
+=== amostra cheia: quanto do repasse passa pelos combustiveis ===
+        desfecho  h  efeito_total  efeito_via_combustivel  ep_canal  p_canal  efeito_nao_via_combustivel  parcela_via_combustivel
+      ipca_geral  0         0.057                   0.039     0.007    0.000                       0.018                    0.685
+      ipca_geral  1         0.129                   0.086     0.013    0.000                       0.043                    0.665
+      ipca_geral  2         0.140                   0.078     0.015    0.000                       0.062                    0.557
+      ipca_geral  3         0.172                   0.079     0.014    0.000                       0.093                    0.462
+      ipca_geral  6         0.122                   0.100     0.022    0.000                       0.022                    0.821
+      ipca_geral 12         0.107                   0.130     0.025    0.000                      -0.023                    1.211
+ipca_transportes  0         0.249                   0.229     0.013    0.000                       0.020                    0.920
+ipca_transportes  1         0.461                   0.439     0.021    0.000                       0.023                    0.951
+ipca_transportes  2         0.443                   0.383     0.023    0.000                       0.060                    0.865
+ipca_transportes  3         0.449                   0.357     0.022    0.000                       0.091                    0.796
+ipca_transportes  6         0.401                   0.291     0.045    0.000                       0.110                    0.726
+ipca_transportes 12         0.342                   0.213     0.073    0.004                       0.129                    0.622
+
+=== por regime (mar/2017), mediador = todos os combustiveis ===
+        desfecho     choque  h  efeito_total  efeito_via_combustivel  p_canal  parcela_via_combustivel
+      ipca_geral choque_pre  0         0.008                   0.005    0.037                    0.690
+      ipca_geral choque_pos  0         0.153                   0.089    0.003                    0.579
+      ipca_geral choque_pre  1         0.038                   0.006    0.216                    0.151
+      ipca_geral choque_pos  1         0.313                   0.219    0.000                    0.699
+      ipca_geral choque_pre  2         0.061                  -0.010    0.114                   -0.162
+      ipca_geral choque_pos  2         0.274                   0.228    0.000                    0.832
+      ipca_geral choque_pre  3         0.120                   0.004    0.662                    0.030
+      ipca_geral choque_pos  3         0.255                   0.225    0.000                    0.880
+      ipca_geral choque_pre  6         0.098                   0.061    0.002                    0.618
+      ipca_geral choque_pos  6         0.137                   0.144    0.034                    1.053
+      ipca_geral choque_pre 12        -0.034                  -0.009    0.882                    0.273
+      ipca_geral choque_pos 12         0.227                   0.227    0.002                    0.997
+ipca_transportes choque_pre  0         0.055                   0.041    0.000                    0.759
+ipca_transportes choque_pos  0         0.634                   0.613    0.000                    0.968
+ipca_transportes choque_pre  1         0.078                   0.061    0.000                    0.787
+ipca_transportes choque_pos  1         1.256                   1.288    0.000                    1.026
+ipca_transportes choque_pre  2         0.052                  -0.004    0.613                   -0.075
+ipca_transportes choque_pos  2         1.140                   1.121    0.000                    0.984
+ipca_transportes choque_pre  3         0.135                   0.056    0.000                    0.420
+ipca_transportes choque_pos  3         1.047                   0.944    0.000                    0.902
+ipca_transportes choque_pre  6         0.377                   0.281    0.000                    0.747
+ipca_transportes choque_pos  6         0.436                   0.351    0.000                    0.804
+ipca_transportes choque_pre 12         0.116                  -0.142    0.037                   -1.223
+ipca_transportes choque_pos 12         0.585                   0.558    0.000                    0.955
+
+=== por conjunto de combustiveis, IPCA Geral, amostra cheia, h=3 ===
+                   rotulo  efeito_via_combustivel  ep_canal  p_canal  parcela_via_combustivel  parcela_boot_ic5  parcela_boot_ic95
+   Gasolina ao consumidor                   0.062     0.008    0.000                    0.362             0.216              0.806
+                   Diesel                   0.056     0.017    0.001                    0.328             0.157              0.682
+        Gasolina e diesel                   0.077     0.014    0.000                    0.448             0.295              0.845
+Gasolina, diesel e etanol                   0.079     0.014    0.000                    0.462             0.302              0.857
+
+>>> onda2_7_segunda_volta
+  ipca_geral
+  ipca_comercializaveis
+  ipca_naocomercializaveis
+  ipca_ex_comb_central
+  ipca_ex_comb_baixo
+  ipca_ex_comb_alto
+
+=== CAMINHO A -- desfechos que ja excluem combustivel (amostra cheia) ===
+h                            0      1      3      6      12
+desfecho                                                   
+ipca_comercializaveis     0.067  0.155  0.238  0.207  0.153
+ipca_ex_comb_alto         0.007  0.034  0.101  0.072  0.080
+ipca_ex_comb_baixo        0.029  0.077  0.133  0.096  0.093
+ipca_ex_comb_central      0.018  0.057  0.118  0.086  0.087
+ipca_geral                0.057  0.129  0.172  0.122  0.107
+ipca_naocomercializaveis  0.008  0.024  0.123  0.172  0.096
+
+p-valor:
+h                            0      1      3      6      12
+desfecho                                                   
+ipca_comercializaveis     0.018  0.002  0.003  0.063  0.315
+ipca_ex_comb_alto         0.746  0.281  0.060  0.322  0.402
+ipca_ex_comb_baixo        0.183  0.030  0.023  0.219  0.356
+ipca_ex_comb_central      0.384  0.087  0.034  0.256  0.371
+ipca_geral                0.023  0.004  0.013  0.173  0.358
+ipca_naocomercializaveis  0.739  0.508  0.028  0.024  0.298
+
+=== CAMINHO B -- sensibilidade aos pesos (amostra cheia) ===
+h                        0      1      3      6      12
+desfecho                                               
+ipca_ex_comb_alto     0.007  0.034  0.101  0.072  0.080
+ipca_ex_comb_baixo    0.029  0.077  0.133  0.096  0.093
+ipca_ex_comb_central  0.018  0.057  0.118  0.086  0.087
+
+p-valor:
+h                        0      1      3      6      12
+desfecho                                               
+ipca_ex_comb_alto     0.746  0.281  0.060  0.322  0.402
+ipca_ex_comb_baixo    0.183  0.030  0.023  0.219  0.356
+ipca_ex_comb_central  0.384  0.087  0.034  0.256  0.371
+
+=== POR REGIME, h = 0, 1 e 3 ===
+h                                        0      1      3
+desfecho                 alvo                           
+ipca_comercializaveis    choque_pos  0.080  0.182  0.124
+                         choque_pre  0.059  0.138  0.284
+ipca_ex_comb_alto        choque_pos  0.022  0.055  0.083
+                         choque_pre -0.002  0.022  0.104
+ipca_ex_comb_baixo       choque_pos  0.077  0.164  0.156
+                         choque_pre  0.003  0.032  0.113
+ipca_ex_comb_central     choque_pos  0.050  0.111  0.122
+                         choque_pre  0.001  0.028  0.110
+ipca_geral               choque_pos  0.153  0.313  0.255
+                         choque_pre  0.008  0.038  0.120
+ipca_naocomercializaveis choque_pos  0.010  0.032  0.118
+                         choque_pre  0.004  0.013  0.106
+
+p-valor:
+h                                        0      1      3
+desfecho                 alvo                           
+ipca_comercializaveis    choque_pos  0.179  0.078  0.456
+                         choque_pre  0.046  0.013  0.005
+ipca_ex_comb_alto        choque_pos  0.572  0.436  0.413
+                         choque_pre  0.934  0.547  0.139
+ipca_ex_comb_baixo       choque_pos  0.051  0.019  0.143
+                         choque_pre  0.885  0.407  0.139
+ipca_ex_comb_central     choque_pos  0.199  0.112  0.239
+                         choque_pre  0.960  0.452  0.136
+ipca_geral               choque_pos  0.001  0.000  0.044
+                         choque_pre  0.755  0.397  0.165
+ipca_naocomercializaveis choque_pos  0.834  0.721  0.417
+                         choque_pre  0.879  0.759  0.133
+
+concluido. planilhas em C:\Users\pedro\OneDrive\Documentos\TCC_python\TCC_artigo_v2\resultados_artigo

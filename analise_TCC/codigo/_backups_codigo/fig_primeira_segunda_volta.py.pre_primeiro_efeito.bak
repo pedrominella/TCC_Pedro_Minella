@@ -1,0 +1,125 @@
+# -*- coding: utf-8 -*-
+"""
+FIGURA DA PRIMEIRA E SEGUNDA VOLTA EM CINCO PAINÉIS (14/10/2026)
+
+A figura anterior (onda2_7_segunda_volta.figuras, segunda_volta.png) juntava num painel o efeito
+total, a primeira e a segunda volta com duas faixas sobrepostas, e noutro três desfechos com faixas
+sobrepostas. O autor achou confusa e pediu a faixa do efeito total. Aqui cada painel tem uma faixa só:
+
+  A  efeito total no IPCA Geral, faixa de 90%
+  B  primeira volta (contribuição aritmética dos combustíveis), faixa dos três cenários de peso
+  C  segunda volta (IPCA sem combustíveis), faixa de 90%
+  D  comercializáveis, faixa de 90%, com o IPCA Geral de referência
+  E  não comercializáveis, faixa de 90%, com o IPCA Geral de referência
+
+Regime posterior a março de 2017. Os pontos de A a C vêm de onda2_7b_voltas_por_regime.xlsx (Tabela 5);
+o erro-padrão do efeito total, que aquele arquivo não grava, é recalculado aqui com o mesmo desenho
+comum e a mesma rotina (O2.ajustar), e o ponto recalculado tem de coincidir com o do arquivo.
+D e E vêm de onda2_7_segunda_volta.xlsx (Tabela H.2).
+
+Uso: python fig_primeira_segunda_volta.py
+"""
+import sys, warnings
+from pathlib import Path
+import numpy as np, pandas as pd
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+
+warnings.filterwarnings("ignore")
+AQUI = Path(__file__).resolve().parent
+sys.path.insert(0, str(AQUI))
+import lp_base_nova as L
+import onda2_bandas_placebo as O2
+from onda2_7_segunda_volta import preparar, _dinamica
+
+RES = AQUI.parent / "resultados"
+FIGS = AQUI.parent / "figuras"
+ESCURO, VERDE, TERRA, AZUL, OLIVA = "#1f2328", "#0B5A56", "#9E3D25", "#185FA5", "#5F6549"
+
+dec = pd.read_excel(RES / "onda2_7b_voltas_por_regime.xlsx", sheet_name="decomposicao")
+dec = dec[(dec.regime == "posterior")]
+cen = dec[dec.cenario == "central"].sort_values("h").set_index("h")
+faixa1 = dec.pivot_table(index="h", columns="cenario", values="primeira_volta")
+resp = pd.read_excel(RES / "onda2_7_segunda_volta.xlsx", sheet_name="respostas")
+resp = resp[(resp.modo == "regime") & (resp.alvo == "choque_pos")]
+
+# erro-padrão do efeito total, no mesmo desenho comum de onda2_7b (cenário central)
+b, dum, pand = L.carregar_pandemia("corrigida")
+b, _ = preparar(b)
+b["regime_pos"] = L.regime(b.Data, L.DATA_CORTE_FINAL)
+b["choque_pre"] = b["choque_petroleo"] * (1 - b["regime_pos"])
+b["choque_pos"] = b["choque_petroleo"] * b["regime_pos"]
+d = b.copy()
+dinamica = _dinamica(d, "ipca_ex_comb_central")
+tot = []
+for h in range(0, L.H_MAX + 1):
+    regs = ["choque_pre", "choque_pos", "regime_pos"] + dinamica + dum + pand(d, h)
+    d["__y"] = L.y_acum(d, "ipca_geral", h)
+    am = d[["Data", "__y"] + regs].replace([np.inf, -np.inf], np.nan).dropna()
+    g = O2.ajustar(am, regs, h, "choque_pos")
+    assert abs(g["valor"] - cen.loc[h, "efeito_total"]) < 1e-10, (h, g["valor"], cen.loc[h, "efeito_total"])
+    tot.append({"h": h, "valor": g["valor"], "ep": g["ep"]})
+tot = pd.DataFrame(tot).set_index("h")
+tot["inf"], tot["sup"] = tot.valor - L.Z_90 * tot.ep, tot.valor + L.Z_90 * tot.ep
+
+# conferência com a Tabela 5
+assert [round(cen.loc[h, "efeito_total"], 3) for h in (0, 1, 2, 3, 6)] == [0.180, 0.360, 0.322, 0.317, 0.180]
+assert [round(cen.loc[h, "primeira_volta"], 3) for h in (0, 6)] == [0.114, 0.023]
+assert [round(cen.loc[h, "segunda_volta"], 3) for h in (0, 3)] == [0.067, 0.161]
+
+
+def virgula(v, _=None):
+    return ("%g" % round(v, 2)).replace(".", ",").replace("-", "−")
+
+
+def estilo(ax, titulo):
+    for lado in ("top", "right"):
+        ax.spines[lado].set_visible(False)
+    ax.axhline(0, color="0.35", lw=0.8)
+    ax.set_xticks(range(0, 13, 2))
+    ax.tick_params(labelsize=7.5)
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(virgula))
+    ax.set_title(titulo, fontsize=9, loc="left")
+    ax.set_xlabel("meses após o choque", fontsize=8)
+
+
+fig = plt.figure(figsize=(9.6, 6.6))
+gs = fig.add_gridspec(2, 6, hspace=0.55, wspace=0.9)
+aA = fig.add_subplot(gs[0, 0:2])
+aB = fig.add_subplot(gs[0, 2:4], sharey=aA)
+aC = fig.add_subplot(gs[0, 4:6], sharey=aA)
+aD = fig.add_subplot(gs[1, 0:3])
+aE = fig.add_subplot(gs[1, 3:6], sharey=aD)
+h = tot.index
+
+aA.fill_between(h, tot.inf, tot.sup, color=ESCURO, alpha=0.13, lw=0)
+aA.plot(h, tot.valor, color=ESCURO, lw=2, marker="o", ms=3)
+estilo(aA, "A. Efeito total no IPCA Geral")
+aA.set_ylabel("resposta acumulada, p.p.", fontsize=8)
+
+aB.fill_between(faixa1.index, faixa1.min(axis=1), faixa1.max(axis=1), color=VERDE, alpha=0.18, lw=0)
+aB.plot(cen.index, cen.primeira_volta, color=VERDE, lw=2, marker="o", ms=3)
+estilo(aB, "B. Primeira volta\n(combustíveis na cesta)")
+
+aC.fill_between(cen.index, cen.ic5_segunda, cen.ic95_segunda, color=TERRA, alpha=0.15, lw=0)
+aC.plot(cen.index, cen.segunda_volta, color=TERRA, lw=2, marker="o", ms=3)
+estilo(aC, "C. Segunda volta\n(demais preços)")
+aA.set_title("A. Efeito total\nno IPCA Geral", fontsize=9, loc="left")
+
+ref = resp[resp.desfecho == "ipca_geral"].sort_values("h")
+for ax, nome, rot, cor in [(aD, "ipca_comercializaveis", "D. Comercializáveis", AZUL),
+                           (aE, "ipca_naocomercializaveis", "E. Não comercializáveis", OLIVA)]:
+    s = resp[resp.desfecho == nome].sort_values("h")
+    ax.fill_between(s.h, s.pontual_inferior, s.pontual_superior, color=cor, alpha=0.15, lw=0)
+    ax.plot(s.h, s.coeficiente, color=cor, lw=2, marker="o", ms=3)
+    ax.plot(ref.h, ref.coeficiente, color="0.45", lw=1.3, ls="--")
+    estilo(ax, rot)
+aD.set_ylabel("resposta acumulada, p.p.", fontsize=8)
+aE.legend(handles=[Line2D([], [], color="0.45", lw=1.3, ls="--", label="IPCA Geral (referência)")],
+          fontsize=7.5, loc="upper left", frameon=False)
+fig.savefig(FIGS / "voltas_paineis.png", dpi=150, bbox_inches="tight")
+plt.close(fig)
+print("salva voltas_paineis.png")
+print(tot.round(3).to_string())

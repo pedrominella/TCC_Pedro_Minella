@@ -1,0 +1,74 @@
+  gasolina_refinaria   h= 0  quebra em 2016-11  supF=  55.1  p=0.000
+  gasolina_refinaria   h= 3  quebra em 2007-02  supF=  13.7  p=0.294
+  gasolina_refinaria   h= 6  quebra em 2006-08  supF=  20.0  p=0.378
+  gasolina_consumidor  h= 0  quebra em 2021-01  supF=   9.0  p=0.020
+  gasolina_consumidor  h= 3  quebra em 2018-10  supF=   6.6  p=0.625
+  gasolina_consumidor  h= 6  quebra em 2006-08  supF=   7.9  p=0.498
+  etanol               h= 0  quebra em 2010-05  supF=   1.1  p=0.980
+  etanol               h= 3  quebra em 2006-08  supF=   3.7  p=0.732
+  etanol               h= 6  quebra em 2021-09  supF=   7.8  p=0.408
+  diesel               h= 0  quebra em 2021-01  supF=  29.5  p=0.020
+  diesel               h= 3  quebra em 2020-11  supF=  22.7  p=0.181
+  diesel               h= 6  quebra em 2020-11  supF=  20.9  p=0.331
+  ipca_geral           h= 0  quebra em 2020-10  supF=   9.2  p=0.100
+  ipca_geral           h= 3  quebra em 2008-07  supF=   7.5  p=0.552
+  ipca_geral           h= 6  quebra em 2008-06  supF=  16.4  p=0.194
+  ipca_transportes     h= 0  quebra em 2021-02  supF=  13.1  p=0.020
+  ipca_transportes     h= 3  quebra em 2006-08  supF=   9.8  p=0.355
+  ipca_transportes     h= 6  quebra em 2006-08  supF=  16.7  p=0.030
+
+=== data estimada da quebra, por variavel e horizonte ===
+           variavel  h data_estimada     supF  p_bootstrap  critico_95_bootstrap  meses_ate_a_PPI
+ gasolina_refinaria  0    2016-11-01    55.10         0.00                 22.78                1
+ gasolina_refinaria  3    2007-02-01    13.73         0.29                 23.56             -116
+ gasolina_refinaria  6    2006-08-01    19.98         0.38                 43.20             -122
+gasolina_consumidor  0    2021-01-01     8.97         0.02                  7.91               51
+gasolina_consumidor  3    2018-10-01     6.57         0.63                 17.79               24
+gasolina_consumidor  6    2006-08-01     7.89         0.50                 17.01             -122
+             etanol  0    2010-05-01     1.13         0.98                  5.33              -77
+             etanol  3    2006-08-01     3.73         0.73                 10.82             -122
+             etanol  6    2021-09-01     7.77         0.41                 16.03               59
+             diesel  0    2021-01-01    29.52         0.02                 26.16               51
+             diesel  3    2020-11-01    22.67         0.18                 34.67               49
+             diesel  6    2020-11-01    20.91         0.33                 44.59               49
+         ipca_geral  0    2020-10-01     9.15         0.10                 10.33               48
+         ipca_geral  3    2008-07-01     7.51         0.55                 17.18              -99
+         ipca_geral  6    2008-06-01    16.45         0.19                 24.20             -100
+   ipca_transportes  0    2021-02-01    13.13         0.02                 11.71               52
+   ipca_transportes  3    2006-08-01     9.81         0.35                 17.76             -122
+   ipca_transportes  6    2006-08-01    16.69         0.03                 14.43             -122
+
+=== repasse antes e depois: data estimada x out/2016 imposta ===
+           variavel  h data_estimada  coef_pre_estimada  coef_pos_estimada  wald_p_estimada  coef_pre_out2016  coef_pos_out2016  wald_p_out2016
+ gasolina_refinaria  0    2016-11-01             -0.065              4.450            0.000            -0.054             4.431           0.000
+ gasolina_refinaria  3    2007-02-01              2.123              3.399            0.457             0.550             5.894           0.002
+ gasolina_refinaria  6    2006-08-01              0.646              2.512            0.185             0.408             5.173           0.021
+gasolina_consumidor  0    2021-01-01              0.487              2.268            0.009             0.103             1.135           0.001
+gasolina_consumidor  3    2018-10-01              0.246              3.013            0.002             0.198             2.873           0.001
+gasolina_consumidor  6    2006-08-01              0.470              0.957            0.608             0.676             1.642           0.482
+             etanol  0    2010-05-01              0.069              0.957            0.091             0.339             1.000           0.152
+             etanol  3    2006-08-01              1.248              1.914            0.784             1.057             2.878           0.175
+             etanol  6    2021-09-01              2.793             -1.328            0.127             2.459             2.197           0.886
+             diesel  0    2021-01-01              0.302              2.896            0.000             0.108             0.950           0.028
+             diesel  3    2020-11-01              1.121              7.749            0.000             0.102             3.334           0.002
+             diesel  6    2020-11-01              1.070             10.326            0.000             0.239             3.619           0.029
+         ipca_geral  0    2020-10-01              0.024              0.217            0.003             0.000             0.083           0.031
+         ipca_geral  3    2008-07-01              0.133              0.190            0.594             0.116             0.268           0.179
+         ipca_geral  6    2008-06-01              0.087              0.154            0.663             0.087             0.259           0.354
+   ipca_transportes  0    2021-02-01              0.140              0.855            0.002             0.029             0.365           0.003
+   ipca_transportes  3    2006-08-01              0.362              0.600            0.422             0.146             1.058           0.005
+   ipca_transportes  6    2006-08-01              0.174              0.506            0.332             0.341             0.846           0.294
+
+=== (D1) segunda quebra, busca sequencial ===
+           variavel  h data_1a_quebra          segmento data_2a_quebra  supF_2a  p_bootstrap_2a  critico_95_2a
+ gasolina_refinaria  0     2016-11-01  antes de 2016-11     2006-02-01    3.030           0.067          3.164
+ gasolina_refinaria  0     2016-11-01 depois de 2016-11     2018-12-01    4.947           0.518          8.498
+gasolina_consumidor  0     2021-01-01  antes de 2021-01     2011-03-01    3.410           0.087          3.775
+gasolina_consumidor  0     2021-01-01 depois de 2021-01     2022-11-01    8.294           0.418         16.212
+             diesel  0     2021-01-01  antes de 2021-01     2006-04-01    1.945           0.615          4.215
+             diesel  0     2021-01-01 depois de 2021-01     2023-11-01    7.999           0.037          7.673
+   ipca_transportes  0     2021-02-01  antes de 2021-02     2006-04-01    3.212           0.177          4.289
+   ipca_transportes  0     2021-02-01 depois de 2021-02     2021-12-01    8.674           0.485         15.038
+   ipca_transportes  6     2006-08-01 depois de 2006-08     2020-07-01    7.279           0.341         12.926
+
+segundas quebras significativas a 5%: 1 de 9

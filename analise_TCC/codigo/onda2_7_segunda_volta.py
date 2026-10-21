@@ -1,0 +1,316 @@
+# -*- coding: utf-8 -*-
+"""
+ONDA 2, ITEM 2.7 -- PRIMEIRA E SEGUNDA VOLTA: O REPASSE ALEM DO EFEITO MECANICO
+
+O PROBLEMA QUE ISTO RESOLVE
+---------------------------
+A decomposicao do item 2.4 mostra que ate 80% do repasse ao IPCA Geral "passa pelos
+combustiveis". Mas gasolina, etanol e diesel SAO COMPONENTES do IPCA. Parte daquele
+canal e, portanto, aritmetica: se a gasolina sobe e a gasolina esta na cesta, o indice
+sobe por definicao, sem que nenhum outro preco tenha se mexido.
+
+Isso e o efeito de PRIMEIRA VOLTA. O que interessa economicamente e a SEGUNDA VOLTA:
+o combustivel mais caro encarece frete, transporte e insumos, e isso se espalha para os
+demais precos. Sem separar as duas coisas, o resultado do item 2.4 e em boa parte a
+repeticao de uma identidade contabil.
+
+Este modulo separa as duas por dois caminhos independentes.
+
+CAMINHO A -- desfechos que EXCLUEM combustivel por construcao (Solucao 1)
+    No IPCA, combustiveis sao precos MONITORADOS, e por isso ficam de fora tanto dos
+    comercializaveis quanto dos nao-comercializaveis. Os dados confirmam: a correlacao
+    da variacao mensal com a da gasolina ao consumidor e 0,577 no IPCA Geral, 0,227 nos
+    comercializaveis e 0,064 nos nao-comercializaveis.
+
+    Logo, estimar a mesma especificacao de referencia com esses dois como desfecho da
+    uma medida de repasse SEM NENHUM componente mecanico. O que aparecer ali e segunda
+    volta por construcao. Nao exige dado novo -- as duas series ja estao na base.
+
+CAMINHO B -- subtrair a contribuicao mecanica (Solucao 2)
+    A contribuicao aritmetica dos combustiveis a inflacao do mes e a soma dos pesos
+    vezes as variacoes: soma_j w_j * dlnP_j(t). Definindo
+
+        dln(IPCA ex-combustiveis)(t) = dln(IPCA)(t) - soma_j w_j * dlnP_j(t)
+
+    e estimando a LP com esse desfecho, o coeficiente e EXATAMENTE
+
+        beta_segunda_volta(h) = beta_IPCA(h) - soma_j w_j * beta_j(h),
+
+    porque a projecao e linear no desfecho. A vantagem sobre calcular a diferenca a mao
+    e que o erro-padrao HAC sai direto da regressao, sem precisar da covariancia
+    conjunta entre equacoes com desenhos diferentes.
+
+    Os pesos do IPCA nao estao na base e mudam com as POF, entao a conta e feita em tres
+    cenarios (baixo, central, alto) e a sensibilidade e reportada. O sinal do resultado
+    nao depende do cenario; a magnitude, um pouco.
+
+RELACAO ENTRE OS DOIS CAMINHOS
+    Sao rotas independentes para o mesmo objeto: A usa uma classificacao oficial do IPCA
+    que exclui combustivel; B remove a contribuicao mecanica por aritmetica. Se
+    concordarem, a leitura de segunda volta esta bem estabelecida. Se discordarem, a
+    diferenca e informativa e precisa ser explicada.
+
+Nota sobre normalizacao: o IPCA ex-combustiveis "de verdade" seria
+(pi - soma w_j pi_j)/(1 - soma w_j). O fator 1/(1 - 0,054) = 1,057 apenas reescala tudo
+em 5,7% e nao muda nenhum veredito; a versao NAO normalizada e usada porque so nela vale
+a identidade exata acima. A versao normalizada tambem e gravada, para conferencia.
+
+Uso: python onda2_7_segunda_volta.py rodar | decompor | figuras
+"""
+import sys, warnings, numpy as np, pandas as pd
+from pathlib import Path
+import statsmodels.api as sm
+from scipy import stats
+warnings.filterwarnings("ignore")
+
+AQUI = Path(__file__).resolve().parent
+PASTA = AQUI.parent
+SAIDA = PASTA / "resultados"; FIGS = PASTA / "figuras"
+SAIDA.mkdir(parents=True, exist_ok=True); FIGS.mkdir(parents=True, exist_ok=True)
+
+import lp_base_nova as L
+import onda2_bandas_placebo as O2      # ajustar(), sup_t_plugin(), hac_conjunta_horizontes()
+
+# Pesos aproximados dos combustiveis no IPCA (estrutura POF; variam ao longo da amostra).
+# O diesel entra com peso quase nulo porque o consumidor final praticamente nao o compra
+# -- o efeito do diesel sobre o IPCA e quase todo de segunda volta, via frete.
+PESOS = {
+    "central": {"gasolina_consumidor": 0.046, "etanol": 0.007, "diesel": 0.0015},
+    "baixo":   {"gasolina_consumidor": 0.035, "etanol": 0.004, "diesel": 0.0010},
+    "alto":    {"gasolina_consumidor": 0.055, "etanol": 0.012, "diesel": 0.0030},
+}
+EXCLUI_COMB = {"ipca_comercializaveis": "Var_IPCA_Comer",
+               "ipca_naocomercializaveis": "Var_IPCA_NComer"}
+
+
+def preparar(b):
+    """Cria as series de desfecho dos dois caminhos, em log-nivel."""
+    novos = []
+    # --- Caminho A: comercializaveis e nao-comercializaveis (ja excluem monitorados)
+    for nome, col in EXCLUI_COMB.items():
+        v = pd.to_numeric(b[col], errors="coerce") / 100.0
+        niv = 100.0 * (1.0 + v).cumprod()
+        b[f"ln_{nome}"] = 100 * np.log(niv)
+        b[f"dlog_{nome}"] = b[f"ln_{nome}"].diff()
+        novos.append(nome)
+    # --- Caminho B: IPCA menos a contribuicao mecanica dos combustiveis
+    for cen, w in PESOS.items():
+        mec = sum(w[f] * b[f"dlog_{f}"] for f in w)
+        nome = f"ipca_ex_comb_{cen}"
+        b[f"dlog_{nome}"] = b["dlog_ipca_geral"] - mec
+        b[f"ln_{nome}"] = b[f"dlog_{nome}"].fillna(0).cumsum()
+        # versao normalizada, so para conferencia
+        s = sum(w.values())
+        b[f"dlog_{nome}_norm"] = b[f"dlog_{nome}"] / (1 - s)
+        b[f"ln_{nome}_norm"] = b[f"dlog_{nome}_norm"].fillna(0).cumsum()
+        novos.append(nome)
+        b[f"mecanico_{cen}"] = mec
+    return b, novos
+
+
+def _dinamica(d, nome):
+    for lag in range(1, L.LAGS + 1):
+        d[f"y_lag{lag}"] = d[f"dlog_{nome}"].shift(lag)
+    regs = []
+    for lag in range(1, L.LAGS + 1):
+        regs += [f"y_lag{lag}", f"choque_petroleo_lag{lag}"] + \
+                [f"{c}_lag{lag}" for c in L.CONTROLES]
+    return regs
+
+
+def _estimar(b, dum, pand, nome, modo):
+    """LP na especificacao de referencia. modo: 'cheia' ou 'regime'."""
+    alvos = ["choque_petroleo"] if modo == "cheia" else ["choque_pre", "choque_pos"]
+    cab = list(alvos) + (["regime_pos"] if modo == "regime" else [])
+    d = b.copy()
+    dinamica = _dinamica(d, nome)
+    montado, gs = [], {}
+    for h in range(0, L.H_MAX + 1):
+        d["__y"] = L.y_acum(d, nome, h)
+        regs = cab + dinamica + dum + pand(d, h)
+        am = d[["Data", "__y"] + regs].replace([np.inf, -np.inf], np.nan).dropna()
+        montado.append((h, regs, am))
+        gs[h] = {a: O2.ajustar(am, regs, h, a) for a in alvos}
+    comuns = set.intersection(*[set(am["Data"]) for _, _, am in montado])
+    c_unif = {}
+    for a in alvos:
+        gsc = [O2.ajustar(am[am["Data"].isin(comuns)], regs, h, a) for h, regs, am in montado]
+        c_unif[a] = O2.sup_t_plugin(O2.hac_conjunta_horizontes(gsc, L.H_MAX + 1))
+    linhas = []
+    for h in range(0, L.H_MAX + 1):
+        for a in alvos:
+            g = gs[h][a]; cf, ep = g["valor"], g["ep"]
+            linhas.append({
+                "desfecho": nome, "modo": modo, "alvo": a, "h": h,
+                "coeficiente": cf, "erro_padrao": ep,
+                "p_valor": float(2 * (1 - stats.norm.cdf(abs(cf / ep)))),
+                "pontual_inferior": cf - L.Z_90 * ep, "pontual_superior": cf + L.Z_90 * ep,
+                "critico_uniforme": c_unif[a],
+                "uniforme_inferior": cf - c_unif[a] * ep, "uniforme_superior": cf + c_unif[a] * ep,
+                "signif_pontual_10": bool(abs(cf / ep) > L.Z_90),
+                "signif_uniforme_10": bool(abs(cf / ep) > c_unif[a]),
+                "observacoes": g["nobs"]})
+    return linhas
+
+
+def rodar():
+    """Caminho A + Caminho B, amostra cheia e por regime."""
+    b, dum, pand = L.carregar_pandemia("corrigida")
+    b, novos = preparar(b)
+    b["regime_pos"] = L.regime(b.Data, L.DATA_CORTE_FINAL)
+    b["choque_pre"] = b["choque_petroleo"] * (1 - b["regime_pos"])
+    b["choque_pos"] = b["choque_petroleo"] * b["regime_pos"]
+
+    linhas = []
+    for nome in ["ipca_geral"] + novos:
+        for modo in ["cheia", "regime"]:
+            linhas += _estimar(b, dum, pand, nome, modo)
+        print(f"  {nome}")
+    t = pd.DataFrame(linhas)
+    t["caminho"] = np.where(t.desfecho.isin(EXCLUI_COMB), "A: exclui monitorados",
+                    np.where(t.desfecho.str.startswith("ipca_ex_comb"), "B: subtrai mecanico",
+                             "referencia"))
+    with pd.ExcelWriter(SAIDA / "onda2_7_segunda_volta.xlsx") as w:
+        t.to_excel(w, sheet_name="respostas", index=False)
+
+    hs = [0, 1, 3, 6, 12]
+    print("\n=== CAMINHO A -- desfechos que ja excluem combustivel (amostra cheia) ===")
+    v = t[(t.modo == "cheia") & (t.h.isin(hs))]
+    print(v.pivot_table(index="desfecho", columns="h", values="coeficiente").round(3).to_string())
+    print("\np-valor:")
+    print(v.pivot_table(index="desfecho", columns="h", values="p_valor").round(3).to_string())
+
+    print("\n=== CAMINHO B -- sensibilidade aos pesos (amostra cheia) ===")
+    v = t[(t.modo == "cheia") & (t.desfecho.str.startswith("ipca_ex_comb")) & (t.h.isin(hs))]
+    print(v.pivot_table(index="desfecho", columns="h", values="coeficiente").round(3).to_string())
+    print("\np-valor:")
+    print(v.pivot_table(index="desfecho", columns="h", values="p_valor").round(3).to_string())
+
+    print("\n=== POR REGIME, h = 0, 1 e 3 ===")
+    v = t[(t.modo == "regime") & (t.h.isin([0, 1, 3]))]
+    print(v.pivot_table(index=["desfecho", "alvo"], columns="h",
+                        values="coeficiente").round(3).to_string())
+    print("\np-valor:")
+    print(v.pivot_table(index=["desfecho", "alvo"], columns="h",
+                        values="p_valor").round(3).to_string())
+    return t
+
+
+def decompor():
+    """Primeira x segunda volta, em duas versoes.
+
+    VERSAO EXATA (a da tabela). A identidade beta_total - primeira = segunda so vale
+    se as tres regressoes tiverem o MESMO desenho. Na especificacao natural elas nao
+    tem, porque cada equacao usa as defasagens da PROPRIA dependente. Aqui as tres
+    rodam sobre um desenho comum -- as defasagens do IPCA ex-combustiveis --, e entao
+    a decomposicao fecha ate a precisao da maquina.
+
+    VERSAO NATURAL (reportada ao lado). A segunda volta estimada com as defasagens da
+    propria serie ex-combustiveis, que e a LP correta para aquele desfecho quando
+    considerado isoladamente. Se as duas versoes forem proximas, a imposicao do
+    desenho comum nao esta distorcendo -- e a conferencia que substitui a identidade.
+    """
+    b, dum, pand = L.carregar_pandemia("corrigida")
+    b, _ = preparar(b)
+    linhas, pior = [], 0.0
+    for cen, w in PESOS.items():
+        nome_ex = f"ipca_ex_comb_{cen}"
+        # --- desenho COMUM: defasagens do ex-combustiveis, usadas em todas as equacoes
+        d = b.copy(); dinamica = _dinamica(d, nome_ex)
+        for h in range(0, L.H_MAX + 1):
+            regs = ["choque_petroleo"] + dinamica + dum + pand(d, h)
+            alvos = {}
+            for nome in ["ipca_geral", nome_ex] + list(w):
+                d["__y"] = L.y_acum(d, nome, h)
+                am = d[["Data", "__y"] + regs].replace([np.inf, -np.inf], np.nan).dropna()
+                alvos[nome] = O2.ajustar(am, regs, h, "choque_petroleo")
+            total = alvos["ipca_geral"]["valor"]
+            primeira = sum(w[f] * alvos[f]["valor"] for f in w)
+            g = alvos[nome_ex]
+            pior = max(pior, abs((total - primeira) - g["valor"]))
+            linhas.append({
+                "cenario": cen, "h": h, "efeito_total": total,
+                "primeira_volta": primeira, "segunda_volta": g["valor"],
+                "ep_segunda_volta": g["ep"],
+                "p_segunda_volta": float(2 * (1 - stats.norm.cdf(abs(g["valor"] / g["ep"])))),
+                "ic5_segunda": g["valor"] - L.Z_90 * g["ep"],
+                "ic95_segunda": g["valor"] + L.Z_90 * g["ep"],
+                "parcela_primeira": primeira / total if abs(total) > 1e-8 else np.nan,
+                "observacoes": g["nobs"]})
+        # --- o preco de impor o desenho comum: o efeito TOTAL sob esse desenho ainda
+        #     reproduz a resposta do IPCA Geral da especificacao de referencia, que usa
+        #     as defasagens do proprio IPCA? Esta e a conferencia que pode falhar.
+        d2 = b.copy(); din2 = _dinamica(d2, "ipca_geral")
+        for h in range(0, L.H_MAX + 1):
+            d2["__y"] = L.y_acum(d2, "ipca_geral", h)
+            regs2 = ["choque_petroleo"] + din2 + dum + pand(d2, h)
+            am2 = d2[["Data", "__y"] + regs2].replace([np.inf, -np.inf], np.nan).dropna()
+            gn = O2.ajustar(am2, regs2, h, "choque_petroleo")
+            linhas[-(L.H_MAX + 1) + h]["total_especificacao_referencia"] = gn["valor"]
+        print(f"  cenario {cen}")
+    t = pd.DataFrame(linhas)
+    t["dif_total"] = (t.efeito_total - t.total_especificacao_referencia).abs()
+    with pd.ExcelWriter(SAIDA / "onda2_7_primeira_segunda_volta.xlsx") as w:
+        t.to_excel(w, sheet_name="decomposicao", index=False)
+
+    print(f"\nidentidade  total - primeira = segunda (desenho comum): desvio maximo {pior:.2e}"
+          f"  ({'OK' if pior < 1e-8 else 'FALHOU'})")
+    print(f"custo de impor o desenho comum -- efeito total aqui contra a especificacao de "
+          f"referencia: diferenca maxima {t.dif_total.max():.4f}, mediana {t.dif_total.median():.4f}"
+          f"  (a resposta de referencia do IPCA Geral em h=3 e 0,172)")
+    print("\n=== decomposicao, cenario CENTRAL ===")
+    v = t[t.cenario == "central"]
+    print(v[["h", "efeito_total", "primeira_volta", "segunda_volta", "ep_segunda_volta",
+             "p_segunda_volta", "parcela_primeira"]].to_string(
+        index=False, float_format=lambda x: f"{x:8.3f}"))
+    print("\n=== segunda volta nos tres cenarios de peso ===")
+    print(t.pivot_table(index="h", columns="cenario", values="segunda_volta").round(3).to_string())
+    print("\np-valor da segunda volta:")
+    print(t.pivot_table(index="h", columns="cenario", values="p_segunda_volta").round(3).to_string())
+    return t
+
+
+def figuras():
+    import matplotlib; matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    t = pd.read_excel(SAIDA / "onda2_7_segunda_volta.xlsx", sheet_name="respostas")
+    dec = pd.read_excel(SAIDA / "onda2_7b_voltas_por_regime.xlsx", sheet_name="decomposicao")
+    dec = dec[dec.regime == "posterior"]          # capitulo e por regime, nao amostra cheia
+
+    fig, ax = plt.subplots(1, 2, figsize=(9.6, 3.8))
+    # esquerda: decomposicao primeira x segunda volta
+    c = dec[dec.cenario == "central"].sort_values("h")
+    ax[0].plot(c.h, c.efeito_total, color="#3b74d4", lw=2, label="efeito total")
+    ax[0].plot(c.h, c.primeira_volta, color="#0f9b8e", lw=1.8, ls="--", label="primeira volta (mecânica)")
+    ax[0].plot(c.h, c.segunda_volta, color="#9E3D25", lw=2, label="segunda volta")
+    ax[0].fill_between(c.h, c.ic5_segunda, c.ic95_segunda, color="#9E3D25", alpha=0.15)
+    lo = dec.pivot_table(index="h", columns="cenario", values="segunda_volta")
+    ax[0].fill_between(lo.index, lo.min(axis=1), lo.max(axis=1), color="#9E3D25",
+                       alpha=0.10, hatch="///", lw=0, label="faixa dos cenários de peso")
+    ax[0].axhline(0, color="0.4", lw=0.8)
+    ax[0].set_title("IPCA Geral: primeira e segunda volta\n(regime posterior a mar/2017)", fontsize=9)
+    ax[0].set_xlabel("meses"); ax[0].set_ylabel("%"); ax[0].legend(fontsize=7)
+
+    # direita: desfechos que ja excluem combustivel
+    cores = {"ipca_geral": "#3b74d4", "ipca_comercializaveis": "#0B5A56",
+             "ipca_naocomercializaveis": "#5F6549"}
+    rot = {"ipca_geral": "IPCA Geral (referência)", "ipca_comercializaveis": "comercializáveis",
+           "ipca_naocomercializaveis": "não comercializáveis"}
+    for nome, cor in cores.items():
+        s = t[(t.modo == "regime") & (t.alvo == "choque_pos")
+              & (t.desfecho == nome)].sort_values("h")
+        ax[1].plot(s.h, s.coeficiente, color=cor, lw=2, label=rot[nome])
+        if nome != "ipca_geral":
+            ax[1].fill_between(s.h, s.pontual_inferior, s.pontual_superior, color=cor, alpha=0.13)
+    ax[1].axhline(0, color="0.4", lw=0.8)
+    ax[1].set_title("Desfechos que excluem combustível\n(regime posterior; monitorados fora dos dois)", fontsize=9)
+    ax[1].set_xlabel("meses"); ax[1].legend(fontsize=7)
+    fig.suptitle("O repasse que sobra depois de tirar o efeito mecânico dos combustíveis", fontsize=10)
+    fig.tight_layout()
+    fig.savefig(FIGS / "segunda_volta.png", dpi=150); plt.close(fig)
+    print("  figura segunda_volta")
+
+
+if __name__ == "__main__":
+    {"rodar": rodar, "decompor": decompor, "figuras": figuras}[
+        sys.argv[1] if len(sys.argv) > 1 else "rodar"]()

@@ -1,0 +1,251 @@
+# -*- coding: utf-8 -*-
+"""
+ONDA 2, ITEM 2.3 -- FORMA REDUZIDA E ANDERSON-RUBIN PARA O CORPO DO TEXTO
+
+Motivacao. O arquivo de Kanzig traz DUAS series mensais, e elas nao sao a mesma coisa:
+
+  `Oil supply surprise series`  -- o instrumento EXTERNO bruto: a surpresa de preco
+      dos futuros de petroleo em torno de anuncios da OPEP. E zero fora dos meses de
+      anuncio (90 dos 270 meses da amostra) e e uma variavel MEDIDA, nao estimada.
+
+  `Oil supply news shock`       -- o choque estrutural RECUPERADO por Kanzig num
+      proxy-SVAR que tem o proprio preco do petroleo entre suas variaveis. E, por
+      construcao, uma combinacao linear dos residuos de forma reduzida daquele VAR,
+      um dos quais e o do preco do petroleo.
+
+O trabalho usava o segundo. Dai o F de primeiro estagio acima de 200: ele e em boa
+parte MECANICO. Correlacao com a variacao do Brent: 0,589 para o news shock contra
+0,188 para a surpresa bruta. Reportar um F de 200 como prova de instrumento forte, e
+depois "confirmar" com Anderson-Rubin CALCULADO SOBRE ESSE MESMO INSTRUMENTO, e
+circular: o AR sai limitado justamente porque o primeiro estagio e mecanicamente
+forte, e nao porque a identificacao externa seja robusta.
+
+Este script agora estima TUDO nas duas versoes, lado a lado:
+
+  (1) FORMA REDUZIDA -- projetar y diretamente sobre o choque identificado, ao estilo
+      de Ramey. Nao existe primeiro estagio nem razao, entao a critica do F nao se
+      aplica. E a especificacao que deve liderar o corpo do texto.
+
+  (2) ANDERSON-RUBIN -- intervalo de confianca para o coeficiente de LP-IV robusto a
+      instrumento fraco, obtido invertendo o teste: o conjunto AR de nivel 1-alfa e
+      {b : (g_y - b*g_x)^2 <= c * Var(g_y - b*g_x)}, com g_y e g_x os coeficientes do
+      instrumento na forma reduzida e no primeiro estagio, e Var vinda da covariancia
+      HAC CONJUNTA dos dois. Isso e uma inequacao quadratica em b:
+
+          (g_x^2 - c*V_xx) b^2 - 2(g_y*g_x - c*V_yx) b + (g_y^2 - c*V_yy) <= 0
+
+      Coeficiente de b^2 positivo -> intervalo limitado. Negativo -> conjunto
+      ilimitado, que e o diagnostico de instrumento fraco. Com a surpresa bruta esse
+      diagnostico passa a ter conteudo.
+
+CORRECOES DE 27/08 (ver LEIA-ME, secao "Auditoria")
+---------------------------------------------------
+(B1) A "verificacao embutida" anterior era vazia: o codigo fazia `beta = gy/gx` e na
+     linha seguinte conferia `abs(beta - gy/gx)`, que e zero por construcao. O
+     LEIA-ME reportava esse zero como prova de consistencia dos tres calculos. Agora
+     beta e reconferido por DOIS caminhos de codigo independentes -- 2SLS em dois
+     estagios explicitos e o IV2SLS do linearmodels -- e o desvio reportado e real.
+(B2) Instrumento externo bruto acrescentado, com F, forma reduzida e AR proprios.
+(B3) Dummies de pandemia por janela do horizonte (C3) e HAC com T/(T-K) (C4).
+
+Uso: python onda2_3_forma_reduzida_ar.py rodar | figuras
+"""
+import sys, warnings, numpy as np, pandas as pd
+from pathlib import Path
+import statsmodels.api as sm
+from scipy import stats
+warnings.filterwarnings("ignore")
+
+AQUI = Path(__file__).resolve().parent
+PASTA = AQUI.parent
+SAIDA = PASTA / "resultados"; FIGS = PASTA / "figuras"
+import lp_base_nova as L
+
+NIVEL = 0.90
+C_CHI2 = stats.chi2.ppf(NIVEL, 1)
+PRINCIPAIS = ["gasolina_consumidor", "diesel", "ipca_transportes", "ipca_geral"]
+INSTRUMENTOS = {
+    "news_svar": ("instrumento_kanzig", "kanzig_lag"),        # recuperado do proxy-SVAR
+    "surpresa_externa": ("instrumento_surpresa", "surpresa_lag"),   # externo bruto
+}
+
+
+def hac_conjunta(X, uy, ux, banda):
+    """Covariancia HAC conjunta de (coef de y sobre X, coef de x sobre X)."""
+    T, K = X.shape
+    g = np.hstack([X * uy[:, None], X * ux[:, None]])         # T x 2K
+    S = g.T @ g / T
+    for j in range(1, banda + 1):
+        w = 1.0 - j / (banda + 1)
+        G = g[j:].T @ g[:-j] / T
+        S += w * (G + G.T)
+    A = np.linalg.pinv(X.T @ X)
+    Z = np.zeros((K, K))
+    AA = np.block([[A, Z], [Z, A]])
+    return AA @ (T * S) @ AA * (T / (T - K)), K               # (B3) T/(T-K)
+
+
+def intervalo_ar(gy, gx, Vyy, Vyx, Vxx, c=C_CHI2):
+    a = gx * gx - c * Vxx
+    b = -2.0 * (gy * gx - c * Vyx)
+    d = gy * gy - c * Vyy
+    disc = b * b - 4 * a * d
+    if a > 0:
+        if disc <= 0:
+            return np.nan, np.nan, "vazio"
+        r = np.sqrt(disc)
+        return (-b - r) / (2 * a), (-b + r) / (2 * a), "limitado"
+    if disc <= 0:
+        return -np.inf, np.inf, "toda a reta"
+    r = np.sqrt(disc)
+    x1, x2 = sorted([(-b - r) / (2 * a), (-b + r) / (2 * a)])
+    return x1, x2, "complemento de intervalo"
+
+
+def beta_2sls_dois_estagios(am, inst, exog):
+    """(B1) 2SLS por dois estagios explicitos -- caminho de codigo independente."""
+    Xp = sm.add_constant(am[[inst] + exog], has_constant="add")
+    xhat = sm.OLS(am["petroleo_endogeno"], Xp).fit().fittedvalues
+    seg = pd.DataFrame({"xhat": xhat}).join(am[exog])
+    r = sm.OLS(am["__y"], sm.add_constant(seg, has_constant="add")).fit()
+    return float(r.params["xhat"])
+
+
+def beta_2sls_linearmodels(am, inst, exog):
+    """(B1) segunda conferencia independente; devolve nan se o pacote reclamar."""
+    try:
+        from linearmodels.iv import IV2SLS
+        Xe = sm.add_constant(am[exog], has_constant="add")
+        r = IV2SLS(dependent=am["__y"], exog=Xe, endog=am[["petroleo_endogeno"]],
+                   instruments=am[[inst]]).fit(cov_type="unadjusted")
+        return float(r.params["petroleo_endogeno"])
+    except Exception:
+        return np.nan
+
+
+def rodar():
+    b, dum, pand = L.carregar_pandemia("corrigida", L.DATA_FIM_IV, com_kanzig=True)
+    linhas = []
+    desvios = {"dois_estagios": 0.0, "linearmodels": 0.0}
+    n_lm = 0
+    for rot_inst, (inst, prefixo_lag) in INSTRUMENTOS.items():
+        for nome in L.VARIAVEIS:
+            d = b.copy()
+            for lag in range(1, L.LAGS + 1):
+                d[f"y_lag{lag}"] = d[f"dlog_{nome}"].shift(lag)
+            exog_base = []
+            for lag in range(1, L.LAGS + 1):
+                exog_base += [f"y_lag{lag}", f"petroleo_lag{lag}", f"{prefixo_lag}{lag}"]
+                exog_base += [f"{c}_lag{lag}" for c in L.CONTROLES]
+
+            for h in range(0, L.H_MAX + 1):
+                d["__y"] = L.y_acum(d, nome, h)
+                exog = exog_base + dum + pand(d, h)                 # (B3)
+                am = d[["__y", "petroleo_endogeno", inst] + exog].replace(
+                    [np.inf, -np.inf], np.nan).dropna()
+                banda = max(1, h + 1)
+
+                Xz = sm.add_constant(am[[inst] + exog], has_constant="add")
+                jz = list(Xz.columns).index(inst)
+                rf = sm.OLS(am["__y"], Xz).fit(cov_type="HAC", cov_kwds=L.hac_kw(h))
+                fs = sm.OLS(am["petroleo_endogeno"], Xz).fit(cov_type="HAC", cov_kwds=L.hac_kw(h))
+                gy, gx = float(rf.params.iloc[jz]), float(fs.params.iloc[jz])
+
+                V, K = hac_conjunta(np.asarray(Xz, float), np.asarray(rf.resid, float),
+                                    np.asarray(fs.resid, float), banda)
+                Vyy, Vxx, Vyx = V[jz, jz], V[K + jz, K + jz], V[jz, K + jz]
+                lo, hi, forma = intervalo_ar(gy, gx, Vyy, Vyx, Vxx)
+
+                # exatamente identificado: beta = forma reduzida / primeiro estagio,
+                # variancia por delta method sobre a covariancia HAC conjunta
+                beta = gy / gx
+                var_beta = (Vyy - 2 * beta * Vyx + beta * beta * Vxx) / (gx * gx)
+                ep = float(np.sqrt(max(var_beta, 0.0)))
+
+                # (B1) conferencia real, por dois caminhos independentes
+                b2 = beta_2sls_dois_estagios(am, inst, exog)
+                b3 = beta_2sls_linearmodels(am, inst, exog)
+                esc = max(abs(beta), 1e-8)
+                desvios["dois_estagios"] = max(desvios["dois_estagios"], abs(beta - b2) / esc)
+                if np.isfinite(b3):
+                    n_lm += 1
+                    desvios["linearmodels"] = max(desvios["linearmodels"], abs(beta - b3) / esc)
+
+                F = float(np.asarray(fs.f_test(f"{inst} = 0").fvalue).squeeze())
+                linhas.append({
+                    "instrumento": rot_inst, "variavel": nome, "h": h,
+                    "forma_reduzida": gy, "ep_forma_reduzida": float(rf.bse.iloc[jz]),
+                    "p_forma_reduzida": float(rf.pvalues.iloc[jz]),
+                    "fr_inferior_90": gy - L.Z_90 * float(rf.bse.iloc[jz]),
+                    "fr_superior_90": gy + L.Z_90 * float(rf.bse.iloc[jz]),
+                    "primeiro_estagio": gx, "f_primeiro_estagio": F,
+                    "beta_2sls": beta, "ep_2sls": ep,
+                    "beta_conf_dois_estagios": b2, "beta_conf_linearmodels": b3,
+                    "ic2sls_inferior_90": beta - L.Z_90 * ep,
+                    "ic2sls_superior_90": beta + L.Z_90 * ep,
+                    "ar_inferior_90": lo, "ar_superior_90": hi, "ar_forma": forma,
+                    "ar_exclui_zero": bool(forma == "limitado" and (lo > 0 or hi < 0)),
+                    "observacoes": int(len(am))})
+            print(f"  {rot_inst:18s} {nome}")
+
+    t = pd.DataFrame(linhas)
+    t["principal"] = t.variavel.isin(PRINCIPAIS)
+    t["largura_ar_sobre_2sls"] = (t.ar_superior_90 - t.ar_inferior_90) / (
+        t.ic2sls_superior_90 - t.ic2sls_inferior_90)
+    t.to_excel(SAIDA / "onda2_3_forma_reduzida_ar_final.xlsx", index=False)
+
+    print(f"\n(B1) conferencia de beta_2SLS por caminhos independentes:")
+    print(f"     dois estagios explicitos : desvio relativo maximo {desvios['dois_estagios']:.2e}")
+    print(f"     linearmodels IV2SLS      : desvio relativo maximo {desvios['linearmodels']:.2e}"
+          f"  ({n_lm} de {len(t)} casos convergiram)")
+
+    print("\n=== o F de primeiro estagio depende de qual serie de Kanzig se usa ===")
+    print(t.groupby("instrumento").f_primeiro_estagio.agg(["min", "max"]).round(1).to_string())
+    print(t.groupby("instrumento").ar_forma.value_counts().to_string())
+
+    for rot in INSTRUMENTOS:
+        s = t[t.instrumento == rot]
+        print(f"\n--- {rot} ---")
+        print(f"  forma reduzida significativa a 10%: {int((s.p_forma_reduzida < 0.10).sum())} de {len(s)}")
+        lim = s[s.ar_forma == "limitado"]
+        print(f"  conjuntos AR limitados: {len(lim)} de {len(s)}"
+              + (f" | largura AR/2SLS media {lim.largura_ar_sobre_2sls.mean():.3f}" if len(lim) else ""))
+        print(f"  AR exclui zero: {int(s.ar_exclui_zero.sum())} de {len(s)}")
+        v = s[s.h.isin(L.HORIZONTES) & s.variavel.isin(PRINCIPAIS)]
+        print(v[["variavel", "h", "forma_reduzida", "ep_forma_reduzida", "p_forma_reduzida",
+                 "f_primeiro_estagio", "ar_forma"]].to_string(
+            index=False, float_format=lambda x: f"{x:8.3f}"))
+    return t
+
+
+def figuras():
+    import matplotlib; matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    t = pd.read_excel(SAIDA / "onda2_3_forma_reduzida_ar_final.xlsx")
+    for nome in PRINCIPAIS:
+        fig, ax = plt.subplots(1, 2, figsize=(9.2, 3.6))
+        for rot, cor in [("news_svar", "#0B5A56"), ("surpresa_externa", "#9E3D25")]:
+            s = t[(t.variavel == nome) & (t.instrumento == rot)].sort_values("h")
+            ax[0].fill_between(s.h, s.fr_inferior_90, s.fr_superior_90, color=cor, alpha=0.15)
+            ax[0].plot(s.h, s.forma_reduzida, color=cor, lw=2, label=rot)
+        ax[0].axhline(0, color="0.4", lw=0.8)
+        ax[0].set_title("forma reduzida\n(resposta ao choque identificado, 1 dp)", fontsize=9)
+        ax[0].set_xlabel("meses"); ax[0].set_ylabel("%"); ax[0].legend(fontsize=7)
+
+        s = t[(t.variavel == nome) & (t.instrumento == "news_svar")].sort_values("h")
+        lo = s.ar_inferior_90.clip(lower=s.ic2sls_inferior_90.min() * 3)
+        hi = s.ar_superior_90.clip(upper=s.ic2sls_superior_90.max() * 3)
+        ax[1].fill_between(s.h, lo, hi, color="#9E3D25", alpha=0.14, label="Anderson-Rubin 90%")
+        ax[1].fill_between(s.h, s.ic2sls_inferior_90, s.ic2sls_superior_90,
+                           color="#0B5A56", alpha=0.20, label="2SLS convencional 90%")
+        ax[1].plot(s.h, s.beta_2sls, color="#0B5A56", lw=2)
+        ax[1].axhline(0, color="0.4", lw=0.8)
+        ax[1].set_title("LP-IV com o news shock do SVAR\nintervalo convencional x AR", fontsize=9)
+        ax[1].set_xlabel("meses"); ax[1].legend(fontsize=7)
+        fig.suptitle(nome, fontsize=10); fig.tight_layout()
+        fig.savefig(FIGS / f"lp_iv_reduzida_ar_final_{nome}.png", dpi=150); plt.close(fig)
+        print(f"  figura {nome}")
+
+
+if __name__ == "__main__":
+    {"rodar": rodar, "figuras": figuras}[sys.argv[1] if len(sys.argv) > 1 else "rodar"]()

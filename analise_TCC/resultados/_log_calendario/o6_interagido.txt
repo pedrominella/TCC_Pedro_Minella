@@ -1,0 +1,21 @@
+  gasolina_refinaria
+  gasolina_consumidor
+  etanol
+  diesel
+  ipca_geral
+  ipca_transportes
+  checagem: versao restrita x onda3_3 (dif max nos coeficientes) = 4.44e-16
+
+  CONTAGENS (horizontes 0, 1 e 3; 6 series = 18 coeficientes)
+   restrita  : anterior signif. 10% 0/18 | posterior signif. 10% 18/18, a 1% 14
+   interagida: anterior signif. 10% 6/18 | posterior signif. 10% 16/18, a 1% 12
+   interagida: Wald pre = pos a 5% em 12/18 | 5 horizontes, posterior signif. 19/30
+   restricao de dinamica comum rejeitada a 5% em 56 de 78 equacoes
+
+  POR SERIE, h = 0 / 1 / 3
+   gasolina_refinaria   h0: ant +0.431 (p 0.050) pos +4.575 (p 0.000) W 0.000 DC 0.005 | h1: ant +0.486 (p 0.108) pos +7.864 (p 0.000) W 0.000 DC 0.006 | h3: ant +0.678 (p 0.144) pos +4.666 (p 0.017) W 0.046 DC 0.000
+   gasolina_consumidor  h0: ant +0.351 (p 0.043) pos +2.115 (p 0.000) W 0.001 DC 0.016 | h1: ant +0.463 (p 0.075) pos +3.914 (p 0.000) W 0.001 DC 0.149 | h3: ant +0.547 (p 0.183) pos +1.965 (p 0.287) W 0.453 DC 0.036
+   etanol               h0: ant +0.572 (p 0.194) pos +1.610 (p 0.024) W 0.215 DC 0.396 | h1: ant +1.593 (p 0.041) pos +3.241 (p 0.003) W 0.223 DC 0.226 | h3: ant +1.985 (p 0.078) pos +1.782 (p 0.255) W 0.917 DC 0.510
+   diesel               h0: ant +0.295 (p 0.053) pos +2.264 (p 0.000) W 0.000 DC 0.016 | h1: ant +0.288 (p 0.220) pos +4.709 (p 0.000) W 0.000 DC 0.060 | h3: ant +0.448 (p 0.286) pos +4.742 (p 0.000) W 0.001 DC 0.000
+   ipca_geral           h0: ant +0.004 (p 0.857) pos +0.203 (p 0.000) W 0.000 DC 0.043 | h1: ant +0.037 (p 0.375) pos +0.353 (p 0.000) W 0.001 DC 0.078 | h3: ant +0.101 (p 0.247) pos +0.272 (p 0.089) W 0.349 DC 0.625
+   ipca_transportes     h0: ant +0.071 (p 0.249) pos +0.733 (p 0.000) W 0.000 DC 0.001 | h1: ant +0.137 (p 0.246) pos +1.354 (p 0.000) W 0.000 DC 0.005 | h3: ant +0.257 (p 0.240) pos +0.973 (p 0.047) W 0.182 DC 0.182

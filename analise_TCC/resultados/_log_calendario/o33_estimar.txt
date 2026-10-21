@@ -1,0 +1,52 @@
+  gasolina_refinaria
+  gasolina_consumidor
+  etanol
+  diesel
+  ipca_geral
+  ipca_transportes
+
+=== regime com corte em 2017-03 contra set/2016 ===
+                        coef_pos          wald_p_naive_pos_selecao         
+corte                  escolhida set/2016                escolhida set/2016
+variavel            h                                                      
+diesel              0      2.308    2.182                    0.000    0.000
+                    1      4.646    4.335                    0.000    0.000
+                    2      4.626    4.343                    0.000    0.000
+                    3      4.318    3.975                    0.001    0.003
+                    6      4.053    3.812                    0.036    0.049
+                    12     2.710    2.675                    0.252    0.247
+etanol              0      1.358    1.240                    0.204    0.272
+                    1      3.331    3.143                    0.053    0.071
+                    2      2.871    2.679                    0.116    0.169
+                    3      2.715    2.316                    0.238    0.408
+                    6      0.613    0.374                    0.435    0.284
+                    12     1.306    1.294                    0.568    0.592
+gasolina_consumidor 0      2.031    1.948                    0.000    0.000
+                    1      3.977    3.704                    0.000    0.000
+                    2      3.323    3.102                    0.001    0.001
+                    3      2.732    2.421                    0.028    0.058
+                    6      0.202    0.033                    0.805    0.667
+                    12     0.425    0.540                    0.543    0.435
+gasolina_refinaria  0      4.888    4.685                    0.000    0.000
+                    1      8.280    7.618                    0.000    0.000
+                    2      7.180    6.633                    0.000    0.000
+                    3      4.489    3.974                    0.010    0.026
+                    6      3.483    2.994                    0.089    0.166
+                    12     2.428    2.320                    0.411    0.434
+ipca_geral          0      0.176    0.153                    0.001    0.006
+                    1      0.356    0.313                    0.000    0.003
+                    2      0.317    0.274                    0.024    0.079
+                    3      0.314    0.255                    0.160    0.381
+                    6      0.189    0.137                    0.524    0.841
+                    12     0.269    0.227                    0.196    0.322
+ipca_transportes    0      0.675    0.634                    0.000    0.000
+                    1      1.366    1.256                    0.000    0.000
+                    2      1.230    1.140                    0.000    0.001
+                    3      1.194    1.047                    0.006    0.026
+                    6      0.520    0.436                    0.741    0.913
+                    12     0.605    0.585                    0.428    0.437
+
+ATENCAO: `wald_p_naive_pos_selecao` NAO e um p-valor valido na data ESTIMADA --
+a data foi escolhida maximizando exatamente essa estatistica. Para a data
+estimada, use `p_ajustado_selecao` da aba do arquivo onda3_3_data_comum.xlsx.
+Na data IMPOSTA (set/2016), que nao foi escolhida pelos dados, ele e valido.

@@ -1,0 +1,95 @@
+
+ONDA 4.4 -- A PARIDADE COMO INSTRUMENTO DO PRECO DOMESTICO DE COMBUSTIVEL
+
+O que a decomposicao de canal (onda2_4) e a segunda volta (onda2_7) NAO fazem e
+identificar causalmente o efeito do preco do combustivel sobre os demais precos.
+La o mediador entra por OLS, e a leitura defensavel e contabil, nao causal.
+
+Aqui o mediador e instrumentado. A logica vem da propria politica: sob paridade
+de importacao, o preco domestico segue MECANICAMENTE a cotacao internacional do
+produto refinado. A cotacao do Golfo dos EUA e preco mundial, o Brasil e tomador,
+e ela nao tem por que afetar precos brasileiros nao-combustiveis a nao ser
+ATRAVES do combustivel brasileiro.
+
+    2o estagio : y_acum(t,h) = a + c * med_acum(t,h) + controles + u
+    1o estagio : med_acum(t,h) = p + f * golfo_acum(t,h) + controles + v
+
+    y     : IPCA nao-comercializaveis e IPCA ex-combustiveis, que EXCLUEM
+            combustivel por construcao, entao c e efeito de segunda ordem puro
+    med   : gasolina ao consumidor, acumulada de t-1 a t+h
+    golfo : gasolina convencional no Golfo dos EUA, em DOLAR, mesma acumulacao
+
+DUAS VERSOES DO INSTRUMENTO
+  (a) sem Brent no modelo: instrumento e a variacao cheia da cotacao do Golfo.
+      Primeiro estagio forte, exclusao mais exigente.
+  (b) com Brent no modelo: a variacao do Golfo comum ao petroleo bruto e
+      absorvida, e o que identifica e o CRACK SPREAD, a margem de refino.
+      Primeiro estagio mais fraco, exclusao bem mais defensavel: margem de refino
+      americana nao tem canal proprio para o preco de servicos no Brasil.
+
+O INSTRUMENTO EM DOLAR, E NAO EM REAL
+  A paridade completa multiplica a cotacao pelo cambio. Usar a paridade em real
+  daria primeiro estagio mais forte e importaria toda a endogeneidade do cambio
+  com a inflacao brasileira. Mantem-se o instrumento em DOLAR e o cambio como
+  controle defasado, como no modelo principal. A versao em real entra so como
+  robustez, com a ressalva registrada.
+
+O PRIMEIRO ESTAGIO E, ELE PROPRIO, UM TESTE DO MECANISMO
+  Se a PPI de fato amarrou o preco domestico a paridade, o F do primeiro estagio
+  tem de ser alto no periodo PPI e baixo antes. Isso e reportado por regime.
+
+Uso: python onda4_4_paridade_iv.py
+
+=== PRIMEIRO ESTAGIO: o preco domestico segue a paridade? ===
+(instrumento cheio, sem Brent no modelo)
+            F          coef        
+regime    PPI pre-PPI   PPI pre-PPI
+h                                  
+0       13.65    4.46  0.23    0.03
+1       12.10    6.92  0.29    0.03
+3       11.56    2.70  0.42    0.02
+
+(identificando pelo crack spread, com Brent no modelo)
+regime    PPI  pre-PPI
+h                     
+0        2.55     2.53
+1        6.02     2.81
+3       10.29     1.70
+
+=== SEGUNDO ESTAGIO: efeito causal do combustivel nos demais precos ===
+
+com_brent = False  (variacao cheia do Golfo)
+                desfecho  h    c_ols   c_2sls  ep_2sls   t_2sls  observacoes
+ipca_naocomercializaveis  0   -0.015   -0.011    0.024   -0.457          269
+    ipca_ex_comb_central  0    0.003    0.001    0.019    0.034          269
+ipca_naocomercializaveis  1   -0.012    0.005    0.025    0.195          268
+    ipca_ex_comb_central  1    0.011    0.030    0.020    1.498          268
+ipca_naocomercializaveis  2   -0.011    0.010    0.028    0.363          267
+    ipca_ex_comb_central  2    0.014    0.050    0.028    1.790          267
+ipca_naocomercializaveis  3   -0.013    0.031    0.042    0.739          266
+    ipca_ex_comb_central  3    0.018    0.073    0.039    1.895          266
+ipca_naocomercializaveis  4   -0.014    0.057    0.060    0.956          265
+    ipca_ex_comb_central  4    0.021    0.105    0.055    1.913          265
+ipca_naocomercializaveis  5   -0.012    0.073    0.061    1.199          264
+    ipca_ex_comb_central  5    0.024    0.110    0.055    2.012          264
+ipca_naocomercializaveis  6   -0.012    0.084    0.058    1.451          263
+    ipca_ex_comb_central  6    0.025    0.100    0.050    2.010          263
+
+com_brent = True  (crack spread)
+                desfecho  h    c_ols   c_2sls  ep_2sls   t_2sls  observacoes
+ipca_naocomercializaveis  0   -0.017   -0.038    0.037   -1.014          269
+    ipca_ex_comb_central  0    0.002   -0.034    0.031   -1.088          269
+ipca_naocomercializaveis  1   -0.014   -0.008    0.032   -0.251          268
+    ipca_ex_comb_central  1    0.009    0.018    0.027    0.698          268
+ipca_naocomercializaveis  2   -0.013   -0.012    0.032   -0.376          267
+    ipca_ex_comb_central  2    0.012    0.037    0.029    1.252          267
+ipca_naocomercializaveis  3   -0.015    0.005    0.039    0.124          266
+    ipca_ex_comb_central  3    0.017    0.060    0.038    1.596          266
+ipca_naocomercializaveis  4   -0.016    0.045    0.061    0.728          265
+    ipca_ex_comb_central  4    0.020    0.106    0.059    1.792          265
+ipca_naocomercializaveis  5   -0.014    0.063    0.063    0.995          264
+    ipca_ex_comb_central  5    0.024    0.109    0.058    1.901          264
+ipca_naocomercializaveis  6   -0.013    0.068    0.057    1.202          263
+    ipca_ex_comb_central  6    0.025    0.096    0.050    1.904          263
+
+gravado: C:\Users\pedro\OneDrive\Documentos\TCC_python\TCC_artigo_v2\resultados\onda4_4_paridade_iv.xlsx

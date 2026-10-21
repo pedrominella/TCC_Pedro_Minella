@@ -1,0 +1,67 @@
+# -*- coding: utf-8 -*-
+"""
+Gráfico do slide "Primeira e segunda volta" (apresentação IC, 08/10/2026).
+Mesmos números da Tabela 5 e da seção 4.9 do TCC: analise_TCC/resultados/onda2_7b_voltas_por_regime.xlsx,
+aba decomposicao, cenário central de pesos, regime posterior a março de 2017.
+Mesma regra de tamanho de fig_slides_legiveis.py: figura em polegadas = espaço no slide / 100.
+"""
+from pathlib import Path
+import pandas as pd
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
+
+AQUI = Path(__file__).resolve().parent
+RES = AQUI.parents[1] / "analise_TCC" / "resultados"
+PRIMEIRA, SEGUNDA, FUNDO, TEXTO = "#9E3D25", "#2E4A62", "#f7f4ee", "#1f2328"
+T_TICK, T_ROT, T_LEG = 16, 18, 17
+HORIZ = [0, 1, 2, 3, 6, 12]
+
+
+def v(x, casas=3):
+    return (f"%.{casas}f" % x).replace(".", ",")
+
+
+t = pd.read_excel(RES / "onda2_7b_voltas_por_regime.xlsx", sheet_name="decomposicao")
+d = t[(t.cenario == "central") & (t.regime == "posterior") & t.h.isin(HORIZ)].sort_values("h").reset_index(drop=True)
+
+# conferência com a Tabela 5 e com a seção 4.9 do TCC
+assert [v(x) for x in d.efeito_total[:5]] == ["0,180", "0,360", "0,322", "0,317", "0,180"]
+assert [v(x) for x in d.primeira_volta[:5]] == ["0,114", "0,223", "0,184", "0,156", "0,023"]
+assert [round(100 * x) for x in d.parcela_primeira] == [63, 62, 57, 49, 13, 20]
+assert round(d.p_segunda_volta[3], 3) == 0.124
+assert all(d.p_segunda_volta[[0, 1, 2, 4, 5]] < 0.10)
+
+fig, ax = plt.subplots(figsize=(16.0, 4.5), dpi=200)
+fig.patch.set_facecolor(FUNDO)
+ax.set_facecolor(FUNDO)
+x = range(len(d))
+ax.bar(x, d.primeira_volta, width=0.58, color=PRIMEIRA)
+ax.bar(x, d.segunda_volta, width=0.58, bottom=d.primeira_volta, color=SEGUNDA)
+for i, r in d.iterrows():
+    p1 = r.parcela_primeira
+    # percentuais dentro de cada parte quando cabem; ao lado quando a parte é pequena
+    if r.primeira_volta >= 0.06:
+        ax.text(i, r.primeira_volta / 2, f"{100 * p1:.0f}%", ha="center", va="center", fontsize=T_LEG, color="white", fontweight="bold")
+    else:
+        ax.text(i + 0.33, r.primeira_volta / 2, f"{100 * p1:.0f}%", ha="left", va="center", fontsize=T_LEG, color=PRIMEIRA, fontweight="bold")
+    ax.text(i, r.primeira_volta + r.segunda_volta / 2, f"{100 * (1 - p1):.0f}%", ha="center", va="center", fontsize=T_LEG, color="white", fontweight="bold")
+    ax.text(i, r.efeito_total + 0.012, "total " + v(r.efeito_total), ha="center", va="bottom", fontsize=T_TICK, color=TEXTO)
+ax.set_xticks(list(x))
+ax.set_xticklabels(["mês do choque", "1 mês", "2 meses", "3 meses", "6 meses", "12 meses"], fontsize=T_ROT, color=TEXTO)
+ax.set_ylabel("p.p. no IPCA", fontsize=T_ROT, color=TEXTO)
+ax.set_ylim(0, 0.43)
+ax.set_yticks([0, 0.1, 0.2, 0.3, 0.4])
+ax.set_yticklabels(["0", "0,1", "0,2", "0,3", "0,4"])
+ax.tick_params(labelsize=T_TICK, colors=TEXTO)
+ax.tick_params(axis="x", length=0)
+for lado in ("top", "right"):
+    ax.spines[lado].set_visible(False)
+fig.legend(handles=[Patch(color=PRIMEIRA, label="primeira volta: o combustível está na cesta"),
+                    Patch(color=SEGUNDA, label="segunda volta: frete e insumos")],
+           loc="lower center", ncol=2, fontsize=T_LEG, frameon=False)
+fig.tight_layout(rect=(0, 0.11, 1, 1))
+saida = AQUI / "graficos" / "slide_voltas.png"
+fig.savefig(saida, facecolor=FUNDO)
+print("salvo", saida.name)

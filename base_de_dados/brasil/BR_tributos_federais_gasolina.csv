@@ -1,0 +1,19 @@
+inicio,fim,cide_R$_m3,pis_cofins_liquido_R$_m3,total_R$_m3,ato,observacao
+2002-01-01,2002-12-31,501.10,0.00,501.10,"Lei 10.336/2001 art. 5 I (redacao original) e art. 8 I; Lei 9.990/2000 art. 4 I","PIS 2,7% e Cofins 12,45% da receita, integralmente deduzidos da Cide ate R$ 39,40 e R$ 181,70/m3 (devido maximo no ano: R$ 36,3 e R$ 167,3/m3)"
+2003-01-01,2004-04-30,541.10,0.00,541.10,"Decreto 4.565/2003 arts. 1 I e 2 I (efeito a partir de 1/1/2003); Lei 9.990/2000 art. 4 I","limites de deducao R$ 46,50 e R$ 214,60/m3 (devido maximo: R$ 36,3 e R$ 167,4/m3)"
+2004-05-01,2008-05-01,280.00,261.60,541.60,"Decreto 5.060/2004 art. 1 I e art. 2; Decreto 5.059/2004 art. 2 I (efeitos a partir de 1/5/2004); Lei 10.865/2004 art. 23","PIS R$ 46,58 + Cofins R$ 215,02 (regime especial por m3); limites de deducao zerados"
+2008-05-02,2009-06-08,180.00,261.60,441.60,"Decreto 6.446/2008 (DOU 2/5/2008)",
+2009-06-09,2010-02-04,230.00,261.60,491.60,"Decreto 6.875/2009 (DOU 9/6/2009)",
+2010-02-05,2010-04-30,150.00,261.60,411.60,"Decreto 7.095/2010 (DOU 5/2/2010)","reducao temporaria ate 30/4/2010"
+2010-05-01,2011-09-26,230.00,261.60,491.60,"Decreto 7.095/2010 (retorno a R$ 230)",
+2011-09-27,2011-10-31,192.60,261.60,454.20,"Decreto 7.570/2011 (DOU 27/9/2011)",
+2011-11-01,2012-06-24,91.00,261.60,352.60,"Decreto 7.591/2011 (efeitos a partir de 1/11/2011)",
+2012-06-25,2015-01-31,0.00,261.60,261.60,"Decreto 7.764/2012 (DOU 25/6/2012)",
+2015-02-01,2015-04-30,0.00,481.61,481.61,"Decreto 8.395/2015 art. 1 (vigencia 1/2/2015)","PIS R$ 85,75 + Cofins R$ 395,86"
+2015-05-01,2017-07-20,100.00,381.60,481.60,"Decreto 8.395/2015 arts. 1 e 2 (vigencia 1/5/2015)","PIS R$ 67,94 + Cofins R$ 313,66"
+2017-07-21,2022-06-22,100.00,792.50,892.50,"Decreto 9.101/2017 (DOU 21/7/2017)","PIS R$ 141,10 + Cofins R$ 651,40"
+2022-06-23,2022-12-31,0.00,0.00,0.00,"Lei Complementar 194/2022 art. 9-A (DOU 23/6/2022)",
+2023-01-01,2023-01-01,100.00,792.50,892.50,"fim do prazo da LC 194/2022; MP 1.157/2023 publicada no DOU de 2/1/2023","um dia com aliquota cheia pelo texto legal"
+2023-01-02,2023-02-28,0.00,0.00,0.00,"Medida Provisoria 1.157/2023 arts. 2 e 6",
+2023-03-01,2023-06-30,0.00,470.00,470.00,"Medida Provisoria 1.163/2023 arts. 3 e 5 (DOU 1/3/2023)","PIS R$ 83,838 + Cofins R$ 386,16"
+2023-07-01,2025-09-30,100.00,792.50,892.50,"fim do prazo da MP 1.163/2023; Decretos 5.059 (redacao 9.101/2017) e 5.060 (redacao 8.395/2015)",

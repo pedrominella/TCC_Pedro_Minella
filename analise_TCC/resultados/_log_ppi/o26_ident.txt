@@ -1,0 +1,22 @@
+verificacao: soma das respostas mensais = resposta acumulada
+variavel                 h    acumulada   soma mensais       desvio
+gasolina_refinaria       3     1.502552       1.502552     0.00e+00
+gasolina_refinaria       6     1.558451       1.558451     4.44e-16
+gasolina_refinaria      12     1.373249       1.373249     1.33e-15
+gasolina_consumidor      3     0.952322       0.952322     4.44e-16
+gasolina_consumidor      6     0.470436       0.470436     1.67e-16
+gasolina_consumidor     12    -0.069170      -0.069170     2.22e-16
+etanol                   3     1.486292       1.486292     6.66e-16
+etanol                   6     1.689913       1.689913     4.44e-16
+etanol                  12     0.789679       0.789679     4.44e-16
+diesel                   3     1.418383       1.418383     2.22e-16
+diesel                   6     1.856613       1.856613     0.00e+00
+diesel                  12     1.661810       1.661810     2.22e-16
+ipca_geral               3     0.171968       0.171968     2.78e-17
+ipca_geral               6     0.122053       0.122053     5.55e-17
+ipca_geral              12     0.107428       0.107428     8.33e-17
+ipca_transportes         3     0.448546       0.448546     2.22e-16
+ipca_transportes         6     0.400721       0.400721     0.00e+00
+ipca_transportes        12     0.341817       0.341817     5.55e-17
+
+desvio maximo: 1.33e-15  (OK)

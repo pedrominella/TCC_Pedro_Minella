@@ -1,0 +1,25 @@
+
+ONDA 4.5 -- COMPARACAO GRAFICA COM O MODELO PRINCIPAL
+
+Tres figuras:
+
+  comparacao_regimes_<var>.png   modelo principal (2 regimes) ao lado do de 3
+                                 regimes, para mostrar que o "pos" do principal
+                                 mistura PPI com pos-PPI e por isso subestima.
+
+  comparacao_coeficiente_ppi.png o coeficiente da PPI contra o coeficiente
+                                 agrupado do modelo principal, horizonte a
+                                 horizonte, com a diferenca sombreada.
+
+  comparacao_ols_iv.png          efeito do combustivel sobre precos que excluem
+                                 combustivel: OLS (contabil) contra 2SLS
+                                 instrumentado pela paridade (causal).
+
+Uso: python onda4_5_comparacao_figuras.py
+
+  comparacao_regimes_ipca_geral.png
+  comparacao_regimes_ipca_transportes.png
+  comparacao_regimes_gasolina_consumidor.png
+  comparacao_regimes_diesel.png
+  comparacao_coeficiente_ppi.png
+  comparacao_ols_iv.png

@@ -1,0 +1,88 @@
+  gasolina_refinaria: c_uniforme = 2.339
+  gasolina_consumidor: c_uniforme = 2.353
+  etanol: c_uniforme = 2.316
+  diesel: c_uniforme = 2.175
+  ipca_geral: c_uniforme = 2.198
+  ipca_transportes: c_uniforme = 2.280
+
+=== 2.1 bandas: pontual x uniforme (horizontes do artigo) ===
+           variavel  h  coeficiente  erro_padrao  critico_uniforme  signif_pontual_10 signif_uniforme_10
+ gasolina_refinaria  0        1.695        0.374             2.339               True               True
+ gasolina_refinaria  1        2.343        0.592             2.339               True               True
+ gasolina_refinaria  2        2.209        0.655             2.339               True               True
+ gasolina_refinaria  3        1.411        0.713             2.339               True              False
+ gasolina_refinaria  6        1.555        0.803             2.339               True              False
+ gasolina_refinaria 12        1.247        1.048             2.339              False              False
+gasolina_consumidor  0        0.786        0.201             2.353               True               True
+gasolina_consumidor  1        1.331        0.389             2.353               True               True
+gasolina_consumidor  2        1.102        0.435             2.353               True               True
+gasolina_consumidor  3        0.952        0.474             2.353               True              False
+gasolina_consumidor  6        0.470        0.574             2.353              False              False
+gasolina_consumidor 12       -0.069        0.804             2.353              False              False
+             etanol  0        0.710        0.356             2.316               True              False
+             etanol  1        1.726        0.626             2.316               True               True
+             etanol  2        1.486        0.671             2.316               True              False
+             etanol  3        1.486        0.821             2.316               True              False
+             etanol  6        1.690        1.057             2.316              False              False
+             etanol 12        0.790        1.162             2.316              False              False
+             diesel  0        0.845        0.180             2.175               True               True
+             diesel  1        1.468        0.348             2.175               True               True
+             diesel  2        1.523        0.451             2.175               True               True
+             diesel  3        1.418        0.504             2.175               True               True
+             diesel  6        1.857        0.748             2.175               True               True
+             diesel 12        1.662        0.695             2.175               True               True
+         ipca_geral  0        0.057        0.025             2.198               True               True
+         ipca_geral  1        0.129        0.044             2.198               True               True
+         ipca_geral  2        0.140        0.053             2.198               True               True
+         ipca_geral  3        0.172        0.069             2.198               True               True
+         ipca_geral  6        0.122        0.090             2.198              False              False
+         ipca_geral 12        0.107        0.117             2.198              False              False
+   ipca_transportes  0        0.249        0.073             2.280               True               True
+   ipca_transportes  1        0.461        0.145             2.280               True               True
+   ipca_transportes  2        0.443        0.153             2.280               True               True
+   ipca_transportes  3        0.449        0.183             2.280               True               True
+   ipca_transportes  6        0.401        0.223             2.280               True              False
+   ipca_transportes 12        0.342        0.281             2.280              False              False
+
+total das 78 respostas -- significativas a 10%:
+  pontual  (HAC, c = 1,645)      : 51/78
+  uniforme (HAC, sup-t plug-in)  : 34/78
+  as duas saem da MESMA variancia HAC; muda so o valor critico.
+
+=== 2.2 placebo em horizontes negativos ===
+           variavel  h  coeficiente  erro_padrao  p_valor_pontual
+ gasolina_refinaria -1        0.681        0.328            0.038
+ gasolina_refinaria -2        0.236        0.274            0.388
+ gasolina_refinaria -3       -0.349        0.231            0.130
+gasolina_consumidor -1        0.082        0.167            0.625
+gasolina_consumidor -2        0.037        0.134            0.780
+gasolina_consumidor -3       -0.029        0.111            0.795
+             etanol -1       -0.066        0.255            0.795
+             etanol -2        0.169        0.232            0.466
+             etanol -3        0.050        0.205            0.809
+             diesel -1       -0.013        0.152            0.933
+             diesel -2       -0.057        0.127            0.650
+             diesel -3       -0.090        0.134            0.502
+         ipca_geral -1        0.026        0.017            0.142
+         ipca_geral -2        0.018        0.015            0.238
+         ipca_geral -3        0.006        0.019            0.742
+   ipca_transportes -1        0.019        0.056            0.735
+   ipca_transportes -2        0.040        0.044            0.361
+   ipca_transportes -3        0.037        0.040            0.352
+
+placebos significativos a 10%: 1 de 18
+
+=== 2.1 testes conjuntos (covariancia HAC, critico por bootstrap) ===
+           variavel                       teste  estatistica   p_qui2  p_bootstrap  critico_95_qui2  critico_95_bootstrap  observacoes
+ gasolina_refinaria        resposta nula h=0..6       21.044    0.004        0.000           14.067                15.898          263
+ gasolina_refinaria igualdade de regimes h=0..6      121.673    0.000        0.000           14.067                19.403          263
+gasolina_consumidor        resposta nula h=0..6       22.710    0.002        0.003           14.067                17.715          263
+gasolina_consumidor igualdade de regimes h=0..6       55.335    0.000        0.000           14.067                19.966          263
+             etanol        resposta nula h=0..6       10.618    0.156        0.326           14.067                16.979          263
+             etanol igualdade de regimes h=0..6       19.104    0.008        0.031           14.067                18.090          263
+             diesel        resposta nula h=0..6       20.571    0.004        0.007           14.067                17.432          263
+             diesel igualdade de regimes h=0..6       65.825    0.000        0.000           14.067                23.714          263
+         ipca_geral        resposta nula h=0..6       12.836    0.076        0.194           14.067                17.588          263
+         ipca_geral igualdade de regimes h=0..6       27.878    0.000        0.000           14.067                17.872          263
+   ipca_transportes        resposta nula h=0..6       18.040    0.012        0.046           14.067                17.661          263
+   ipca_transportes igualdade de regimes h=0..6       41.524    0.000        0.000           14.067                21.379          263

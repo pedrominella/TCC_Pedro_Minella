@@ -1,0 +1,4 @@
+  paridade_golfo.png
+  correlação média antes de set/2016: +0.022  (mínimo -0.522, máximo +0.356)
+  correlação média depois          : +0.632  (mínimo -0.183, máximo +0.897)
+  razão no último mês: 0.928

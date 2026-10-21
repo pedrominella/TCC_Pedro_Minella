@@ -1,0 +1,85 @@
+  news_svar          gasolina_refinaria
+  news_svar          gasolina_consumidor
+  news_svar          etanol
+  news_svar          diesel
+  news_svar          ipca_geral
+  news_svar          ipca_transportes
+  surpresa_externa   gasolina_refinaria
+  surpresa_externa   gasolina_consumidor
+  surpresa_externa   etanol
+  surpresa_externa   diesel
+  surpresa_externa   ipca_geral
+  surpresa_externa   ipca_transportes
+
+(B1) conferencia de beta_2SLS por caminhos independentes:
+     dois estagios explicitos : desvio relativo maximo 8.70e-11
+     linearmodels IV2SLS      : desvio relativo maximo 7.92e-10  (156 de 156 casos convergiram)
+
+=== o F de primeiro estagio depende de qual serie de Kanzig se usa ===
+                    min    max
+instrumento                   
+news_svar         114.0  251.1
+surpresa_externa    2.9    6.8
+instrumento       ar_forma
+news_svar         limitado    78
+surpresa_externa  limitado    78
+
+--- news_svar ---
+  forma reduzida significativa a 10%: 41 de 78
+  conjuntos AR limitados: 78 de 78 | largura AR/2SLS media 1.009
+  AR exclui zero: 41 de 78
+           variavel  h  forma_reduzida  ep_forma_reduzida  p_forma_reduzida  f_primeiro_estagio ar_forma
+gasolina_consumidor  0           0.554              0.216             0.010             242.745 limitado
+gasolina_consumidor  1           0.961              0.391             0.014             211.227 limitado
+gasolina_consumidor  2           0.826              0.463             0.075             192.020 limitado
+gasolina_consumidor  3           0.841              0.488             0.085             191.555 limitado
+gasolina_consumidor  6           0.485              0.514             0.345             164.548 limitado
+gasolina_consumidor 12          -0.573              0.685             0.402             158.668 limitado
+             diesel  0           0.516              0.142             0.000             251.128 limitado
+             diesel  1           0.919              0.237             0.000             219.431 limitado
+             diesel  2           1.162              0.370             0.002             205.706 limitado
+             diesel  3           1.161              0.428             0.007             192.750 limitado
+             diesel  6           1.378              0.658             0.036             169.041 limitado
+             diesel 12           1.344              0.804             0.094             152.629 limitado
+         ipca_geral  0           0.031              0.022             0.166             243.031 limitado
+         ipca_geral  1           0.082              0.036             0.022             214.387 limitado
+         ipca_geral  2           0.100              0.048             0.036             199.136 limitado
+         ipca_geral  3           0.133              0.054             0.014             194.246 limitado
+         ipca_geral  6           0.126              0.077             0.102             177.478 limitado
+         ipca_geral 12           0.048              0.108             0.658             179.962 limitado
+   ipca_transportes  0           0.178              0.074             0.016             250.455 limitado
+   ipca_transportes  1           0.291              0.133             0.029             217.936 limitado
+   ipca_transportes  2           0.300              0.153             0.051             202.086 limitado
+   ipca_transportes  3           0.318              0.163             0.051             194.254 limitado
+   ipca_transportes  6           0.314              0.195             0.108             173.137 limitado
+   ipca_transportes 12           0.068              0.229             0.765             166.411 limitado
+
+--- surpresa_externa ---
+  forma reduzida significativa a 10%: 0 de 78
+  conjuntos AR limitados: 78 de 78 | largura AR/2SLS media 1.824
+  AR exclui zero: 0 de 78
+           variavel  h  forma_reduzida  ep_forma_reduzida  p_forma_reduzida  f_primeiro_estagio ar_forma
+gasolina_consumidor  0          -0.186              0.119             0.120               5.779 limitado
+gasolina_consumidor  1           0.005              0.213             0.981               5.443 limitado
+gasolina_consumidor  2           0.129              0.253             0.610               6.425 limitado
+gasolina_consumidor  3          -0.110              0.381             0.773               4.394 limitado
+gasolina_consumidor  6          -0.056              0.465             0.904               5.456 limitado
+gasolina_consumidor 12          -0.034              0.719             0.962               3.820 limitado
+             diesel  0          -0.109              0.111             0.328               5.793 limitado
+             diesel  1          -0.017              0.182             0.924               5.504 limitado
+             diesel  2           0.386              0.258             0.134               6.428 limitado
+             diesel  3           0.214              0.387             0.580               4.441 limitado
+             diesel  6           0.457              0.538             0.395               5.208 limitado
+             diesel 12           0.402              0.689             0.559               3.820 limitado
+         ipca_geral  0          -0.019              0.018             0.302               4.460 limitado
+         ipca_geral  1          -0.009              0.032             0.771               4.114 limitado
+         ipca_geral  2          -0.009              0.049             0.862               4.978 limitado
+         ipca_geral  3           0.009              0.071             0.900               3.377 limitado
+         ipca_geral  6           0.029              0.100             0.770               3.850 limitado
+         ipca_geral 12           0.026              0.125             0.836               3.095 limitado
+   ipca_transportes  0          -0.012              0.053             0.816               6.179 limitado
+   ipca_transportes  1           0.037              0.087             0.669               5.849 limitado
+   ipca_transportes  2           0.090              0.125             0.474               6.801 limitado
+   ipca_transportes  3           0.052              0.182             0.776               4.730 limitado
+   ipca_transportes  6           0.190              0.227             0.401               5.448 limitado
+   ipca_transportes 12           0.211              0.288             0.464               3.791 limitado

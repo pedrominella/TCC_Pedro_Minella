@@ -1,0 +1,155 @@
+# -*- coding: utf-8 -*-
+"""
+O BRASIL NA DISTRIBUICAO INTERNACIONAL DE REPASSE
+
+Replica a metodologia do Banco Mundial (AKCURA, 2025, WP 11153) com a base de
+precos que acompanha aquele trabalho, e situa o Brasil.
+
+  repasse = [varejo(t1) - varejo(t0)] / [referencia(t1-1) - referencia(t0-1)]
+
+Precos de varejo em USD por litro, de modo que a depreciacao cambial nao entra.
+Referencia: gasolina convencional do Golfo dos EUA (EIA), que e a mesma que o
+Banco Mundial usa para as Americas. Janela de alta: ago/2020 a jun/2022.
+
+Painel A  distribuicao dos 66 paises, separada pela classificacao de controle
+          de preco da base de politicas do proprio Banco Mundial
+Painel B  America Latina e Caribe, ordenada
+
+Uso: python fig_repasse_internacional.py
+"""
+import warnings
+import numpy as np, pandas as pd
+from pathlib import Path
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+warnings.filterwarnings("ignore")
+
+BASE = Path(r"C:/Users/pedro/OneDrive/Documentos/TCC_python/base_de_dados")
+FIGS = Path(__file__).resolve().parent.parent / "figuras"
+SAIDA = Path(__file__).resolve().parent.parent / "resultados"
+OLIVA, TERRA, ESCURO, CINZA = "#5F6549", "#9E3D25", "#272A24", "#8C8C8C"
+GAL = 3.785411784
+A, B = pd.Period("2020-08", "M"), pd.Period("2022-06", "M")
+LAC = ["BRA", "ARG", "CHL", "COL", "PER", "MEX", "URY", "PRY", "BOL", "ECU",
+       "PAN", "CRI", "GTM", "HND", "NIC", "SLV", "DOM", "JAM", "BLZ", "GUY",
+       "SUR", "HTI", "TTO"]
+
+
+def carrega():
+    bm = pd.read_csv(BASE / "gasolina_golfo.csv", skiprows=4, names=["Data", "v"])
+    bm["Data"] = pd.to_datetime(bm.Data, errors="coerce")
+    bm["v"] = pd.to_numeric(bm.v, errors="coerce")
+    bm = bm.dropna()
+    bm.index = pd.DatetimeIndex(bm.Data).to_period("M")
+    ref = bm["v"] / GAL
+
+    x = pd.ExcelFile(BASE / "Global_Fuel_Prices_Database.xlsx")
+    d = x.parse("Reg Gasoline (below RON 95) USD", header=0)
+    d = d[d["Default MAP (1 to show)"] == 1]
+    cols = [c for c in d.columns if hasattr(c, "year")]
+
+    c = pd.ExcelFile(BASE / "Global_Fuel_Subsidies_&_Price_Control_Measures_Database.xlsx")
+    ctl = {}
+    for ano in ["2021", "2022"]:
+        t = c.parse(ano, header=None, skiprows=2)
+        for _, r in t.iterrows():
+            ctl.setdefault(str(r[1]).strip(), []).append(r[4])
+
+    den = ref.get(B - 1, np.nan) - ref.get(A - 1, np.nan)
+    lin = []
+    for _, r in d.iterrows():
+        s = pd.Series(pd.to_numeric(r[cols].values, errors="coerce"),
+                      index=pd.DatetimeIndex(cols).to_period("M")).dropna()
+        if A not in s.index or B not in s.index:
+            continue
+        cod = str(r["Country Code"]).strip()
+        reg = ctl.get(cod, [])
+        lin.append({"pais": str(r["Country"]).strip(), "cod": cod,
+                    "pt": (s[B] - s[A]) / den,
+                    "regime": "regulado" if any(str(v) == "1" for v in reg)
+                              else "desregulado" if reg else None})
+    return pd.DataFrame(lin).dropna(subset=["regime"])
+
+
+def main():
+    t = carrega()
+    t.to_excel(SAIDA / "repasse_internacional.xlsx", index=False)
+    br = float(t.loc[t.cod == "BRA", "pt"].iloc[0])
+    ordem = t.sort_values("pt", ascending=False).reset_index(drop=True)
+    pos = int(ordem.index[ordem.cod == "BRA"][0]) + 1
+
+    fig, ax = plt.subplots(1, 2, figsize=(12.6, 4.6),
+                           gridspec_kw={"width_ratios": [1, 1.18]})
+
+    # ------------------------------------------------ painel A
+    a = ax[0]
+    rng = np.random.default_rng(7)
+    for j, (rot, cor) in enumerate([("desregulado", TERRA), ("regulado", OLIVA)]):
+        s = t[t.regime == rot]
+        xj = j + rng.uniform(-0.17, 0.17, len(s))
+        a.scatter(xj, s.pt, s=34, color=cor, alpha=0.60, edgecolor="white", lw=0.6, zorder=2)
+        m = s.pt.median()
+        a.hlines(m, j - 0.34, j + 0.34, color=ESCURO, lw=2.0, zorder=4)
+        a.text(j + 0.38, m, "mediana\n%.3f" % m, fontsize=8.5, color=ESCURO, va="center")
+        a.text(j, -0.42, "%s\n(n = %d)" % (rot, len(s)), ha="center", fontsize=9)
+    a.scatter([0], [br], s=125, color=TERRA, edgecolor=ESCURO, lw=1.7, zorder=6)
+    a.annotate("Brasil  %.3f" % br, xy=(0, br), xytext=(0.30, br + 0.34),
+               fontsize=9.5, color=ESCURO, fontweight="bold",
+               arrowprops=dict(arrowstyle="-", color=ESCURO, lw=0.9))
+    a.axhline(0, color="0.55", lw=0.8, ls=":")
+    a.axhline(1, color="0.55", lw=0.8, ls=":")
+    a.text(-0.52, 1.02, "repasse integral", fontsize=7.8, color="0.45", ha="left")
+    a.set_xlim(-0.55, 1.55); a.set_xticks([])
+    a.set_ylabel("repasse do preço internacional ao varejo", fontsize=9)
+    a.tick_params(labelsize=8)
+    a.set_title("A. Repasse e regra de preço, %d países" % len(t),
+                fontsize=10.5, loc="left", pad=16)
+    a.text(0, 1.015, "classificação de controle de preço da base do Banco Mundial",
+           transform=a.transAxes, fontsize=8, color="0.35", va="bottom")
+    for sp in ["top", "right", "bottom"]:
+        a.spines[sp].set_visible(False)
+
+    # ------------------------------------------------ painel B
+    b = ax[1]
+    z = t[t.cod.isin(LAC)].sort_values("pt").reset_index(drop=True)
+    cor = [TERRA if r.regime == "desregulado" else OLIVA for _, r in z.iterrows()]
+    bord = [ESCURO if r.cod == "BRA" else "white" for _, r in z.iterrows()]
+    b.barh(range(len(z)), z.pt, color=cor, height=0.68, edgecolor=bord, lw=1.4)
+    from matplotlib.patches import Patch
+    b.legend(handles=[Patch(facecolor=TERRA, label="preço desregulado"),
+                      Patch(facecolor=OLIVA, label="preço regulado")],
+             fontsize=8, loc="lower right", framealpha=0.92, borderpad=0.6)
+    b.set_yticks(range(len(z)))
+    b.set_yticklabels(["Brasil" if r.cod == "BRA" else r.pais for _, r in z.iterrows()],
+                      fontsize=8.4)
+    for tick, r in zip(b.get_yticklabels(), z.itertuples()):
+        if r.cod == "BRA":
+            tick.set_fontweight("bold"); tick.set_color(ESCURO)
+    for i, v in enumerate(z.pt):
+        b.text(v + 0.025, i, "%.2f" % v, va="center", fontsize=8, color="0.25")
+    b.axvline(1, color="0.55", lw=0.8, ls=":")
+    b.set_xlim(0, 1.42)
+    b.set_xlabel("repasse", fontsize=9)
+    b.tick_params(labelsize=8)
+    b.set_title("B. América Latina e Caribe", fontsize=10.5, loc="left", pad=16)
+    b.text(0, 1.015, "o Brasil não dispõe de fundo de estabilização de preços",
+           transform=b.transAxes, fontsize=8, color=TERRA, va="bottom")
+    for sp in ["top", "right"]:
+        b.spines[sp].set_visible(False)
+
+    fig.tight_layout()
+    arq = FIGS / "repasse_internacional.png"
+    fig.savefig(arq, dpi=150, bbox_inches="tight"); plt.close(fig)
+
+    print("  ", arq.name)
+    print("   Brasil %.3f | posicao %d de %d | percentil %.0f"
+          % (br, pos, len(t), 100 * (1 - (pos - 1) / (len(t) - 1))))
+    for rot in ["desregulado", "regulado"]:
+        s = t[t.regime == rot]
+        print("   %-12s n=%2d  mediana %.3f  media %.3f" % (rot, len(s), s.pt.median(), s.pt.mean()))
+    print("   mediana mundial %.3f | mediana LAC %.3f" % (t.pt.median(), z.pt.median()))
+
+
+if __name__ == "__main__":
+    main()

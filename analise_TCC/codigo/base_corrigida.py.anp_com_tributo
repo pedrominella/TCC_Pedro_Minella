@@ -1,0 +1,198 @@
+# -*- coding: utf-8 -*-
+"""
+BASE CORRIGIDA -- serie de juros
+
+Problema: `Selic.1` da base original e a Selic EFETIVA ACUMULADA NO MES anualizada
+por 12, nao a meta Selic. Como a acumulacao e feita em dias uteis, dois meses com a
+mesma meta produzem taxas anualizadas diferentes se tiverem numeros diferentes de
+dias uteis -- ruido de calendario entrando no modelo como se fosse politica monetaria.
+
+Duas fontes de correcao, em ordem de preferencia:
+
+  (A) OFICIAL -- arquivos do SGS/BCB colocados em TCC_artigo_v2/base/:
+        sgs_432.csv   meta Selic definida pelo Copom (% a.a.)
+        sgs_4189.csv  Selic acumulada no mes anualizada base 252 dias uteis
+      Baixar em https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados?formato=csv
+      (idem para 4189), periodo 01/12/2002 a 30/09/2025.
+
+  (B) RECONSTRUIDA -- na ausencia dos arquivos, este script reconstroi a taxa em base
+      252 a partir da propria coluna `Selic` (% a.m.), usando o calendario de dias
+      uteis brasileiro (feriados nacionais bancarios, incluindo os moveis derivados
+      da Pascoa). A reconstrucao e VALIDADA contra episodios em que a meta ficou
+      parada: se o calendario estiver certo, a serie fica plana nesses periodos.
+
+Uso:
+    python base_corrigida.py validar     # testa o calendario e a reconstrucao
+    python base_corrigida.py construir   # grava base/base_corrigida.parquet
+"""
+import sys, warnings, numpy as np, pandas as pd
+from pathlib import Path
+warnings.filterwarnings("ignore")
+
+AQUI = Path(__file__).resolve().parent
+PASTA = AQUI.parent
+RAIZ = PASTA.parent
+BASE_ORIG = RAIZ / "base_de_dados/IPCA.xlsx"
+
+
+def pascoa(ano):
+    a = ano % 19; b, c = ano // 100, ano % 100
+    d, e = b // 4, b % 4
+    f = (b + 8) // 25
+    g = (b - f + 1) // 3
+    h = (19 * a + b - d - g + 15) % 30
+    i, k = c // 4, c % 4
+    l = (32 + 2 * e + 2 * i - h - k) % 7
+    m = (a + 11 * h + 22 * l) // 451
+    mes = (h + l - 7 * m + 114) // 31
+    dia = ((h + l - 7 * m + 114) % 31) + 1
+    return pd.Timestamp(ano, mes, dia)
+
+
+def feriados(ano_ini, ano_fim):
+    fs = []
+    for ano in range(ano_ini, ano_fim + 1):
+        p = pascoa(ano)
+        fs += [
+            pd.Timestamp(ano, 1, 1),                 # Confraternizacao
+            p - pd.Timedelta(days=48),               # Carnaval segunda
+            p - pd.Timedelta(days=47),               # Carnaval terca
+            p - pd.Timedelta(days=2),                # Sexta-feira Santa
+            pd.Timestamp(ano, 4, 21),                # Tiradentes
+            pd.Timestamp(ano, 5, 1),                 # Trabalho
+            p + pd.Timedelta(days=60),               # Corpus Christi
+            pd.Timestamp(ano, 9, 7),                 # Independencia
+            pd.Timestamp(ano, 10, 12),               # Aparecida
+            pd.Timestamp(ano, 11, 2),                # Finados
+            pd.Timestamp(ano, 11, 15),               # Proclamacao
+            pd.Timestamp(ano, 12, 25),               # Natal
+            # 24/12 e 31/12 NAO sao excluidos: a Selic acumula normalmente nesses
+            # dias (a regra de mercado fechado e da B3, nao do calendario da Selic).
+            # Inclui-los como feriado inflava dezembro em ate 1,4 p.p. na anualizacao.
+        ]
+        if ano >= 2024:
+            fs.append(pd.Timestamp(ano, 11, 20))     # Consciencia Negra, nacional desde 2024
+    return np.array(sorted({f.date() for f in fs}), dtype="datetime64[D]")
+
+
+def dias_uteis_do_mes(datas, fer):
+    out = []
+    for d in datas:
+        ini = np.datetime64(d.strftime("%Y-%m-01"), "D")
+        fim = (np.datetime64(ini, "M") + 1).astype("datetime64[D]")
+        out.append(int(np.busday_count(ini, fim, holidays=fer)))
+    return np.array(out)
+
+
+def carregar():
+    b = pd.read_excel(BASE_ORIG, sheet_name="Sheet1")
+    b["Data"] = pd.to_datetime(b["Data"], errors="coerce")
+    b = b.dropna(subset=["Data"]).sort_values("Data")
+    b = b[(b.Data >= "2003-01-01") & (b.Data <= "2025-09-01")].reset_index(drop=True)
+    fer = feriados(2002, 2026)
+    b["dias_uteis"] = dias_uteis_do_mes(b["Data"], fer)
+    b["selic_mes"] = pd.to_numeric(b["Selic"], errors="coerce")
+    b["selic_base_original"] = pd.to_numeric(b["Selic.1"], errors="coerce")
+    taxa_dia = (1 + b["selic_mes"] / 100) ** (1 / b["dias_uteis"]) - 1
+    b["selic_252_reconstruida"] = ((1 + taxa_dia) ** 252 - 1) * 100
+    return trocar_refinaria(b)
+
+
+# ------------------------------------------------------------------
+# GASOLINA A NA REFINARIA -- correcao de 01/10/2026
+# ------------------------------------------------------------------
+# A coluna GasolinaABrasil_media do IPCA.xlsx so coincide com a media da ANP em 9 de
+# 274 meses e sua variacao (Var_GasolinaABrasil_media) so bate com a da propria serie em
+# 120 de 273 meses (ver modelos_novos/auditoria_dados.py e resultados/auditoria_dados.xlsx).
+# Passa-se a usar a fonte documentada: ANP, precos medios ponderados semanais praticados
+# por produtores e importadores, produto "Gasolina A" (2002-2012) e "Gasolina A Comum"
+# (2013 em diante), coluna Brasil, R$/litro sem ICMS. Agregacao mensal: media das semanas
+# pelo mes do dia inicial, a regra que reproduz a coluna original nos meses em que ela
+# coincide com a ANP. As colunas originais ficam com o sufixo _original.
+ANP_MENSAL = RAIZ / "base_de_dados" / "paises" / "BR_gasolinaA_anp_mensal.csv"
+COL_ANP = "gasolina_A_anp_mes_inicio_semana"
+
+
+def trocar_refinaria(b):
+    anp = pd.read_csv(ANP_MENSAL, parse_dates=["mes"]).set_index("mes")[COL_ANP]
+    for c in ["GasolinaABrasil_media", "Var_GasolinaABrasil_media", "GasolinaABrasil_media_nivel"]:
+        b[c + "_original"] = b[c]
+    preco = b["Data"].map(anp)
+    anterior = b["Data"].map(lambda d: anp.get(d - pd.DateOffset(months=1), np.nan))
+    if preco.isna().any():
+        raise ValueError("meses sem preco da ANP: " + str(b.loc[preco.isna(), "Data"].tolist()))
+    base_dez2002 = anp.loc["2002-12-01"]
+    b["GasolinaABrasil_media"] = preco
+    b["Var_GasolinaABrasil_media"] = 100 * (preco / anterior - 1)
+    b["GasolinaABrasil_media_nivel"] = 100 * preco / base_dez2002      # dez/2002 = 100, como na coluna original
+    return b
+
+
+# episodios em que a meta ficou parada (fonte: historico do Copom)
+PLATOS = [
+    ("2020-08", "2021-02", 2.00),
+    ("2022-09", "2023-07", 13.75),
+    ("2015-08", "2016-09", 14.25),
+    ("2012-10", "2013-03", 7.25),
+    ("2024-06", "2024-08", 10.50),
+]
+
+
+def validar():
+    b = carregar()
+    print("=== validacao do calendario: a serie reconstruida fica plana quando a meta esta parada? ===")
+    print(f"{'periodo':22s} {'meta':>7s} {'original: desvio-padrao':>24s} {'reconstruida: dp':>18s} {'media recon':>12s}")
+    ok = 0
+    for ini, fim, meta in PLATOS:
+        s = b[(b.Data >= f"{ini}-01") & (b.Data <= f"{fim}-01")]
+        dp_o = s["selic_base_original"].std()
+        dp_r = s["selic_252_reconstruida"].std()
+        m_r = s["selic_252_reconstruida"].mean()
+        print(f"{ini+' a '+fim:22s} {meta:7.2f} {dp_o:24.3f} {dp_r:18.3f} {m_r:12.2f}")
+        if dp_r < 0.15 and dp_r < dp_o / 2:
+            ok += 1
+    print(f"\nplatos reproduzidos corretamente: {ok}/{len(PLATOS)}")
+    d_o = b["selic_base_original"].diff().abs()
+    d_r = b["selic_252_reconstruida"].diff().abs()
+    print(f"variacao mensal absoluta media -- original {d_o.mean():.3f} p.p. | reconstruida {d_r.mean():.3f} p.p.")
+    print(f"meses com |variacao| > 0,25 p.p. -- original {int((d_o>0.25).sum())} | reconstruida {int((d_r>0.25).sum())}")
+    print("\n(o Copom mudou a meta em cerca de 90 dos 273 meses da amostra)")
+    return b
+
+
+def construir():
+    b = validar()
+    oficial = {}
+    for sgs, nome in [(432, "meta_selic_sgs432"), (4189, "selic_252_sgs4189")]:
+        arq = PASTA / "base" / f"sgs_{sgs}.csv"
+        if arq.exists():
+            t = pd.read_csv(arq, sep=";", decimal=",", dtype=str)
+            # o CSV do SGS traz a coluna de valor com o nome longo da serie e uma
+            # linha final "Fonte;Copom"; pega-se a primeira coluna como data e a
+            # segunda como valor, sem depender do cabecalho.
+            col_data, col_valor = t.columns[0], t.columns[1]
+            t["Data"] = pd.to_datetime(t[col_data], dayfirst=True, errors="coerce")
+            t[nome] = pd.to_numeric(t[col_valor].str.replace(",", ".", regex=False),
+                                    errors="coerce")
+            t = t.dropna(subset=["Data", nome]).set_index("Data")[nome]
+            if sgs == 432:      # diaria -> vigente no ultimo dia do mes
+                t = t.resample("MS").last()
+            oficial[nome] = t
+            print(f"  incorporado {arq.name}: {len(t)} observacoes")
+        else:
+            print(f"  [ausente] {arq.name} -- usando so a serie reconstruida")
+    for nome, serie in oficial.items():
+        b[nome] = b["Data"].map(serie)
+        if nome == "selic_252_sgs4189":
+            dif = (b[nome] - b["selic_252_reconstruida"]).abs()
+            print(f"  conferencia reconstruida x oficial: desvio maximo {dif.max():.3f} p.p., "
+                  f"medio {dif.mean():.3f} p.p.")
+    b["selic_final"] = b.get("meta_selic_sgs432", b["selic_252_reconstruida"])
+    saida = PASTA / "base" / "base_corrigida.parquet"
+    b.to_parquet(saida, index=False)
+    print(f"\ngravado {saida}")
+    return b
+
+
+if __name__ == "__main__":
+    {"validar": validar, "construir": construir}[sys.argv[1] if len(sys.argv) > 1 else "validar"]()

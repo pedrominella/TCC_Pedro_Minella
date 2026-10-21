@@ -1,0 +1,24 @@
+
+  segmento anterior: 166 meses, 94 candidatas, 299 réplicas
+    perfil gasolina_consumidor
+    perfil diesel
+    perfil ipca_geral
+    perfil ipca_transportes
+    argmax 2006-05  F = 19.90  crítico 5% = 21.61  p = 0.107
+
+  segmento posterior: 103 meses, 31 candidatas, 299 réplicas
+    perfil gasolina_consumidor
+    perfil diesel
+    perfil ipca_geral
+    perfil ipca_transportes
+    argmax 2021-12  F = 17.04  crítico 5% = 34.23  p = 0.615
+
+======================================================================
+SEGUNDA QUEBRA: valor crítico por reamostragem, ajustado por seleção
+======================================================================
+ segmento data_argmax  estatistica  critico_95  p_bootstrap  n_candidatas  replicas
+ anterior  2006-05-01    19.896416   21.613578     0.107023            94       299
+posterior  2021-12-01    17.041337   34.230317     0.615385            31       299
+
+Nota: p-valor e critico do MAXIMO sobre todas as candidatas do segmento,
+com cada replica refazendo a busca inteira sob a hipotese nula de dois regimes.

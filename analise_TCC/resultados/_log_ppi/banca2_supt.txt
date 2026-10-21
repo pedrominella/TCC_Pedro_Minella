@@ -1,0 +1,42 @@
+  uniforme gasolina_refinaria
+  uniforme gasolina_consumidor
+  uniforme etanol
+  uniforme diesel
+  uniforme ipca_geral
+  uniforme ipca_transportes
+
+=== A. CRITERIO UNIFORME NA TABELA 2 ===
+  regime anterior :  1/30 pontual  |   0/30 uniforme
+  regime posterior: 23/30 pontual  |  18/30 uniforme
+  h=0,1,3  anterior :  0/18 pontual  |   0/18 uniforme
+  h=0,1,3  posterior: 18/18 pontual  |  16/18 uniforme
+
+  valores criticos sup-t por serie (regime posterior):
+    gasolina_refinaria       2.362
+    gasolina_consumidor      2.317
+    etanol                   2.318
+    diesel                   2.150
+    ipca_geral               2.338
+    ipca_transportes         2.339
+  pandemia x assimetria ipca_geral
+  pandemia x assimetria diesel
+  pandemia x assimetria gasolina_consumidor
+  pandemia x assimetria gasolina_refinaria
+
+=== B. PANDEMIA x ASSIMETRIA ===
+
+  --- ipca_geral ---
+   h = 0
+     indicadoras  simetrico pos = +0.176   |  alta = +0.141  baixa = +0.207  p(sim) = 0.686   N=269
+     sem 2020     simetrico pos = +0.176   |  alta = +0.141  baixa = +0.207  p(sim) = 0.679   N=259
+   h = 1
+     indicadoras  simetrico pos = +0.356   |  alta = +0.370  baixa = +0.335  p(sim) = 0.888   N=268
+     sem 2020     simetrico pos = +0.356   |  alta = +0.371  baixa = +0.336  p(sim) = 0.888   N=258
+
+  --- diesel ---
+   h = 0
+     indicadoras  simetrico pos = +2.308   |  alta = +4.118  baixa = +0.623  p(sim) = 0.002   N=269
+     sem 2020     simetrico pos = +2.308   |  alta = +4.118  baixa = +0.623  p(sim) = 0.002   N=259
+   h = 1
+     indicadoras  simetrico pos = +4.646   |  alta = +7.289  baixa = +2.039  p(sim) = 0.004   N=268
+     sem 2020     simetrico pos = +4.647   |  alta = +7.360  baixa = +2.106  p(sim) = 0.003   N=258

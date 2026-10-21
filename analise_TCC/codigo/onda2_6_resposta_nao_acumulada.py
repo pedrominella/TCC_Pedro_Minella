@@ -1,0 +1,229 @@
+# -*- coding: utf-8 -*-
+"""
+ONDA 2, ITEM 2.6 -- RESPOSTA NAO ACUMULADA: QUANDO a inflacao acontece
+
+A especificacao principal do trabalho usa a resposta ACUMULADA do nivel de precos,
+
+    y(t,h) = 100 * [ln P(t+h) - ln P(t-1)]
+
+que responde "h meses depois do choque, o nivel de precos esta quanto por cento mais
+alto?". E o objeto certo para medir REPASSE, porque repasse se define como a mudanca
+proporcional no nivel, e por isso continua sendo a tabela principal.
+
+Este modulo estima a versao NAO ACUMULADA,
+
+    y(t,h) = 100 * [ln P(t+h) - ln P(t+h-1)]  =  a inflacao DO MES t+h,
+
+que responde "em qual mes a inflacao aparece?". As duas sao a mesma informacao vista de
+dois angulos, e ligadas pela identidade
+
+    beta_acumulado(h) = soma_{j=0..h} beta_nao_acumulado(j)
+
+que este script verifica numericamente.
+
+POR QUE ISTO IMPORTA AQUI. A resposta acumulada do IPCA Geral sobe ate h=3 (0,172) e
+DESCE depois (0,122 em h=6, 0,110 em h=12). Numa resposta acumulada em nivel, descer
+significa que o nivel de precos esta revertendo -- ou seja, a contribuicao mensal fica
+NEGATIVA a partir do quarto mes. Na versao acumulada isso fica ilegivel; na nao
+acumulada aparece direto como um pico nos primeiros meses seguido de valores negativos.
+E o desenho de "repasse rapido e depois correcao", que e exatamente a leitura economica
+que o trabalho defende e que hoje so aparece de forma indireta.
+
+DETALHE DAS DUMMIES DE PANDEMIA. Na versao acumulada a dependente cobre t..t+h, entao a
+indicadora correta e 1{t <= s <= t+h} (correcao C3 do modulo). Aqui a dependente e o mes
+t+h SOZINHO, entao a indicadora correta e 1{t + h = s} -- um impulso deslocado, nao uma
+janela. As duas coincidem em h=0.
+
+Uso: python onda2_6_resposta_nao_acumulada.py rodar | identidade | figuras
+"""
+import sys, warnings, numpy as np, pandas as pd
+from pathlib import Path
+import statsmodels.api as sm
+from scipy import stats
+warnings.filterwarnings("ignore")
+
+_NOMES = {"ipca_geral": "IPCA Geral", "ipca_transportes": "IPCA Transportes",
+          "gasolina_consumidor": "Gasolina ao consumidor",
+          "gasolina_refinaria": "Gasolina na refinaria",
+          "diesel": "Óleo diesel", "etanol": "Etanol",
+          "ipca_comercializaveis": "Comercializáveis",
+          "ipca_naocomercializaveis": "Não comercializáveis"}
+
+AQUI = Path(__file__).resolve().parent
+PASTA = AQUI.parent
+SAIDA = PASTA / "resultados"; FIGS = PASTA / "figuras"
+SAIDA.mkdir(parents=True, exist_ok=True); FIGS.mkdir(parents=True, exist_ok=True)
+
+import lp_base_nova as L
+import onda2_bandas_placebo as O2      # ajustar(), sup_t_plugin(), hac_conjunta_horizontes()
+
+PRINCIPAIS = ["gasolina_consumidor", "diesel", "ipca_transportes", "ipca_geral"]
+
+
+def y_mes(b, nome, h):
+    """Inflacao do mes t+h: 100*[ln P(t+h) - ln P(t+h-1)]."""
+    return b[f"dlog_{nome}"].shift(-h)
+
+
+def pand_mes(d, h):
+    """Indicadoras de pandemia para a dependente do mes t+h: 1{t + h = s}."""
+    mi = d["Data"].dt.year * 12 + d["Data"].dt.month
+    nomes = []
+    for s in L.PANDEMIA:
+        c = f"pand_{s:%Y%m}"
+        d[c] = (mi + h == s.year * 12 + s.month).astype(float)
+        nomes.append(c)
+    return nomes
+
+
+def _base(nome, b):
+    d = b.copy()
+    for lag in range(1, L.LAGS + 1):
+        d[f"y_lag{lag}"] = d[f"dlog_{nome}"].shift(lag)
+    regs = []
+    for lag in range(1, L.LAGS + 1):
+        regs += [f"y_lag{lag}", f"choque_petroleo_lag{lag}"] + \
+                [f"{c}_lag{lag}" for c in L.CONTROLES]
+    return d, regs
+
+
+def rodar():
+    b, dum, _ = L.carregar_pandemia("corrigida")
+    b["regime_pos"] = L.regime(b.Data, L.DATA_CORTE_FINAL)
+    b["choque_pre"] = b["choque_petroleo"] * (1 - b["regime_pos"])
+    b["choque_pos"] = b["choque_petroleo"] * b["regime_pos"]
+
+    linhas = []
+    for nome in L.VARIAVEIS:
+        d, dinamica = _base(nome, b)
+        for modo, alvos in [("amostra cheia", ["choque_petroleo"]),
+                            ("por regime", ["choque_pre", "choque_pos"])]:
+            montado, gs = [], {}
+            for h in range(0, L.H_MAX + 1):
+                d["__y"] = y_mes(d, nome, h)
+                cab = list(alvos) + (["regime_pos"] if modo == "por regime" else [])
+                regs = cab + dinamica + dum + pand_mes(d, h)
+                am = d[["Data", "__y"] + regs].replace([np.inf, -np.inf], np.nan).dropna()
+                montado.append((h, regs, am))
+                gs[h] = {a: O2.ajustar(am, regs, h, a) for a in alvos}
+
+            # banda uniforme sup-t plug-in, por alvo, na amostra comum
+            comuns = set.intersection(*[set(am["Data"]) for _, _, am in montado])
+            c_unif = {}
+            for a in alvos:
+                gsc = [O2.ajustar(am[am["Data"].isin(comuns)], regs, h, a)
+                       for h, regs, am in montado]
+                c_unif[a] = O2.sup_t_plugin(O2.hac_conjunta_horizontes(gsc, L.H_MAX + 1))
+
+            for h in range(0, L.H_MAX + 1):
+                for a in alvos:
+                    g = gs[h][a]
+                    cf, ep = g["valor"], g["ep"]
+                    linhas.append({
+                        "modo": modo, "variavel": nome, "alvo": a, "h": h,
+                        "coeficiente": cf, "erro_padrao": ep,
+                        "p_valor": float(2 * (1 - stats.norm.cdf(abs(cf / ep)))),
+                        "pontual_inferior": cf - L.Z_90 * ep,
+                        "pontual_superior": cf + L.Z_90 * ep,
+                        "critico_uniforme": c_unif[a],
+                        "uniforme_inferior": cf - c_unif[a] * ep,
+                        "uniforme_superior": cf + c_unif[a] * ep,
+                        "signif_pontual_10": bool(abs(cf / ep) > L.Z_90),
+                        "signif_uniforme_10": bool(abs(cf / ep) > c_unif[a]),
+                        "observacoes": g["nobs"]})
+        print(f"  {nome}")
+
+    t = pd.DataFrame(linhas)
+    t["acumulado_ate_h"] = t.groupby(["modo", "variavel", "alvo"])["coeficiente"].cumsum()
+    with pd.ExcelWriter(SAIDA / "onda2_6_resposta_nao_acumulada.xlsx") as w:
+        t[t.modo == "amostra cheia"].to_excel(w, sheet_name="amostra_cheia", index=False)
+        t[t.modo == "por regime"].to_excel(w, sheet_name="por_regime", index=False)
+
+    print("\n=== resposta NAO ACUMULADA: a inflacao do mes t+h ===")
+    v = t[(t.modo == "amostra cheia") & (t.variavel.isin(PRINCIPAIS))]
+    print(v.pivot_table(index="variavel", columns="h", values="coeficiente").round(3).to_string())
+    print("\np-valor:")
+    print(v.pivot_table(index="variavel", columns="h", values="p_valor").round(3).to_string())
+    print("\nmeses com resposta NEGATIVA e significativa a 10% (a correcao):")
+    neg = v[(v.coeficiente < 0) & (v.signif_pontual_10)]
+    print(neg[["variavel", "h", "coeficiente", "p_valor"]].to_string(
+        index=False, float_format=lambda x: f"{x:8.3f}") if len(neg) else "  nenhum")
+
+    print("\n=== por regime, IPCA Geral e IPCA Transportes ===")
+    r = t[(t.modo == "por regime") & (t.variavel.isin(["ipca_geral", "ipca_transportes"]))]
+    print(r.pivot_table(index=["variavel", "alvo"], columns="h",
+                        values="coeficiente").round(3).to_string())
+    return t
+
+
+def identidade():
+    """Verifica beta_acumulado(h) = soma_{j<=h} beta_nao_acumulado(j).
+
+    Para a identidade valer EXATAMENTE, o desenho X e a amostra precisam ser os
+    mesmos nas duas pecas -- por isso aqui as dummies de pandemia sao fixadas na
+    versao de janela do horizonte alvo, e todas as regressoes rodam na amostra do
+    horizonte mais longo. Fora deste teste, cada versao usa a dummy que lhe cabe.
+    """
+    b, dum, pand = L.carregar_pandemia("corrigida")
+    print("verificacao: soma das respostas mensais = resposta acumulada")
+    print(f"{'variavel':22s} {'h':>3s} {'acumulada':>12s} {'soma mensais':>14s} {'desvio':>12s}")
+    pior = 0.0
+    for nome in L.VARIAVEIS:
+        d, dinamica = _base(nome, b)
+        for H in [3, 6, 12]:
+            d["__y"] = L.y_acum(d, nome, H)
+            regs = ["choque_petroleo"] + dinamica + dum + pand(d, H)   # X fixo
+            base = d[["Data", "__y"] + regs].replace([np.inf, -np.inf], np.nan).dropna()
+            datas = set(base["Data"])
+            for j in range(0, H + 1):
+                d[f"__m{j}"] = y_mes(d, nome, j)
+                datas &= set(d[["Data", f"__m{j}"] + regs].replace(
+                    [np.inf, -np.inf], np.nan).dropna()["Data"])
+            am = base[base["Data"].isin(datas)]
+            acum = O2.ajustar(am, regs, H, "choque_petroleo")["valor"]
+            soma = 0.0
+            for j in range(0, H + 1):
+                aj = d[["Data", f"__m{j}"] + regs].replace([np.inf, -np.inf], np.nan).dropna()
+                aj = aj[aj["Data"].isin(datas)].rename(columns={f"__m{j}": "__y"})
+                soma += O2.ajustar(aj, regs, H, "choque_petroleo")["valor"]
+            pior = max(pior, abs(soma - acum))
+            print(f"{nome:22s} {H:3d} {acum:12.6f} {soma:14.6f} {abs(soma-acum):12.2e}")
+    print(f"\ndesvio maximo: {pior:.2e}  ({'OK' if pior < 1e-8 else 'FALHOU'})")
+
+
+def figuras():
+    import matplotlib; matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    t = pd.read_excel(SAIDA / "onda2_6_resposta_nao_acumulada.xlsx",
+                      sheet_name="por_regime")
+    t = t[t.alvo == "choque_pos"]        # capitulo e por regime (auditoria 06/09)
+    ac = pd.read_excel(SAIDA / "onda2_bandas_placebo_final.xlsx", sheet_name="bandas")
+    ac = ac[ac.tipo == "resposta"]
+    fig, axes = plt.subplots(2, 2, figsize=(9.4, 6.4))
+    for ax, nome in zip(axes.ravel(), PRINCIPAIS):
+        s = t[t.variavel == nome].sort_values("h")
+        ax.bar(s.h, s.coeficiente, color=np.where(s.coeficiente >= 0, "#0B5A56", "#9E3D25"),
+               alpha=0.85, width=0.7, label="inflação do mês (não acumulada)")
+        ax.errorbar(s.h, s.coeficiente, yerr=L.Z_90 * s.erro_padrao, fmt="none",
+                    ecolor="0.35", lw=0.9, capsize=2)
+        a = ac[ac.variavel == nome].sort_values("h")
+        ax2 = ax.twinx()
+        ax2.plot(a.h, a.coeficiente, color="#5F6549", lw=1.8, ls="--",
+                 label="acumulada (eixo direito)")
+        ax2.tick_params(axis="y", labelsize=7)
+        ax.axhline(0, color="0.3", lw=0.9)
+        ax.set_title(_NOMES.get(nome, nome), fontsize=9); ax.set_xlabel("meses após o choque")
+        ax.tick_params(labelsize=7)
+        if nome == PRINCIPAIS[0]:
+            h1, l1 = ax.get_legend_handles_labels(); h2, l2 = ax2.get_legend_handles_labels()
+            ax.legend(h1 + h2, l1 + l2, fontsize=6.5, loc="upper right")
+    fig.suptitle("Quando a inflação acontece: resposta mensal (barras, IC 90%)\n"
+                 "contra a resposta acumulada do nível de preços (linha tracejada)", fontsize=10)
+    fig.tight_layout()
+    fig.savefig(FIGS / "resposta_nao_acumulada.png", dpi=150); plt.close(fig)
+    print("  figura resposta_nao_acumulada")
+
+
+if __name__ == "__main__":
+    {"rodar": rodar, "identidade": identidade, "figuras": figuras}[
+        sys.argv[1] if len(sys.argv) > 1 else "rodar"]()

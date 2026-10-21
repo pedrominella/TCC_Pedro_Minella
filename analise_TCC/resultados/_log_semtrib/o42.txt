@@ -1,0 +1,71 @@
+
+ONDA 4.2 -- IDENTIFICACAO DO DESENHO LIGA-DESLIGA
+
+O modelo de tres regimes (onda4_1) mostra que o repasse sobe em mar/2017 e cai
+em jun/2023. Este script testa se esse padrao pode ser levado a serio como
+efeito da POLITICA, e nao como acidente amostral. Quatro exercicios:
+
+  (1) POTENCIA. O coeficiente do 3o regime vem de poucos meses. Se o choque
+      quase nao variou depois de 2023, o coeficiente e mal identificado e o
+      "desligou" pode ser so falta de variacao. Mede-se o desvio-padrao do
+      choque DENTRO de cada regime e a variacao efetiva que identifica cada
+      coeficiente.
+
+  (2) VOLTA A LINHA DE BASE. A previsao forte da hipotese institucional nao e
+      apenas "caiu": e que o repasse volte ao patamar anterior a politica. Testa
+      b_pre = b_pos, por horizonte e conjuntamente em h=0..6. Nao rejeitar aqui
+      e o resultado favoravel, entao o teste vem acompanhado da checagem de
+      potencia do item (1): nao rejeitar com desenho fraco nao significa nada.
+
+  (3) PLACEBO DE DATA. Se a quebra de 2023 fosse artefato, datas falsas dentro
+      do periodo PPI produziriam rejeicoes parecidas. Varre-se cada mes de
+      jan/2019 a dez/2022 como fim FALSO da PPI, mantendo mar/2017, e compara-se
+      a estatistica dessas datas com a da data verdadeira.
+
+  (4) EXOGENEIDADE DO CHOQUE AO REGIME. A media e a variancia do choque nao
+      podem diferir sistematicamente entre regimes de um jeito que explique o
+      resultado. Reporta-se media, desvio e teste de igualdade de variancia.
+
+Uso: python onda4_2_identificacao.py
+
+=== (1) e (4) potencia e exogeneidade do choque ===
+         meses  media  desvio    min    max  soma_quadrados
+regime                                                     
+pre-PPI    169  0.033   0.874 -3.255  1.901         128.647
+PPI         75  0.042   1.346 -5.434  4.628         134.145
+pos-PPI     28 -0.037   0.557 -0.977  1.010           8.423
+
+Levene (igualdade de variancia do choque entre regimes): p = 0.026
+ANOVA  (igualdade de media do choque entre regimes)     : p = 0.935
+Nao rejeitar e o resultado desejado: o choque nao muda de natureza
+entre regimes, logo a mudanca de coeficiente nao vem do regressor.
+
+=== (2) o repasse volta ao patamar pre-politica? ===
+           variavel              teste  estatistica  p_bootstrap  critico_95   dif_h0    ep_h0
+ gasolina_refinaria pre = pos (h=0..6)       32.037        0.000      13.879    2.593    1.244
+gasolina_consumidor pre = pos (h=0..6)       21.584        0.002      13.751    1.451    0.593
+             etanol pre = pos (h=0..6)        6.686        0.522      13.900    0.990    1.362
+             diesel pre = pos (h=0..6)        8.848        0.346      14.988    2.028    1.112
+         ipca_geral pre = pos (h=0..6)       16.730        0.000      11.872   -0.061    0.099
+   ipca_transportes pre = pos (h=0..6)       29.589        0.000      13.709    0.382    0.215
+p ALTO aqui e favoravel: nao se distingue o pos-PPI do pre-PPI.
+
+=== (3) placebo: datas falsas de fim da PPI (jan/2019 a dez/2022) ===
+  ipca_geral: |t| verdadeiro = 2.29
+  ipca_transportes: |t| verdadeiro = 0.98
+  gasolina_consumidor: |t| verdadeiro = 1.02
+  diesel: |t| verdadeiro = 0.47
+                     placebos  maiores_que_o_verdadeiro  t_max_placebo  t_verdadeiro
+variavel                                                                            
+diesel                     48                        40          2.020         0.468
+gasolina_consumidor        48                         4          1.674         1.019
+ipca_geral                 48                         2          2.336         2.295
+ipca_transportes           48                        24          1.539         0.980
+
+p empirico do placebo (fracao de datas falsas com |t| >= verdadeiro):
+  diesel                 0.833
+  gasolina_consumidor    0.083
+  ipca_geral             0.042
+  ipca_transportes       0.500
+
+gravado: C:\Users\pedro\OneDrive\Documentos\TCC_python\TCC_artigo_v2\resultados\onda4_2_identificacao.xlsx

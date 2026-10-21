@@ -1,0 +1,18 @@
+  residuos_principal_ipca_geral.png
+
+  DIAGNOSTICOS  ipca_geral  (especificacao por regime, corte 2017-03-01)
+    h    n    K  desvio   antes  depois   BG(h+1)      BP      JB
+    0  269   43   0.212   0.183   0.253     0.222   0.008   0.000
+    3  266   43   0.638   0.552   0.763     0.000   0.096   0.000
+    6  263   43   0.963   0.880   1.094     0.000   0.008   0.037
+   12  257   43   1.518   1.451   1.641     0.000   0.080   0.003
+  BG: Breusch-Godfrey com h+1 defasagens, p-valor. BP: Breusch-Pagan. JB: Jarque-Bera.
+  Em h > 0 a rejeicao de BG e esperada por construcao da projecao local;
+  o horizonte de impacto e o unico em que o teste e informativo.
+
+  cinco maiores residuos em h = 0:
+    2018-06  +1.044
+    2022-07  -0.772
+    2025-01  -0.692
+    2021-09  +0.599
+    2021-01  -0.577

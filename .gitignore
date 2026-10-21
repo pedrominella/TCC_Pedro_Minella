@@ -1,0 +1,21 @@
+# Fora do repositório (decisão de 20/10/2026)
+
+# projeto separado, com os dados brutos dos países (cerca de 1,1 GB)
+artigo_futuro_paises/
+
+# backups e versões antigas do TCC
+historico/
+
+# PDFs dos artigos citados e da norma (direitos autorais)
+referencias/
+documentos_complementares/norma_ABNT.pdf
+
+# documentos pessoais
+documentos_complementares/historico_escolar_pedro_minella.pdf
+documentos_complementares/Carta_Justificativa_Pedro_Minella.*
+
+# arquivos do sistema e temporários
+desktop.ini
+~$*
+__pycache__/
+*.pyc

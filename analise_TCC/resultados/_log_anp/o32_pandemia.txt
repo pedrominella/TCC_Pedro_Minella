@@ -1,0 +1,38 @@
+  base                   gasolina_consumidor  2021-01  supF=   9.0  p=0.023
+  base                   diesel               2021-01  supF=  29.5  p=0.010
+  base                   ipca_transportes     2021-02  supF=  13.1  p=0.010
+  base                   ipca_geral           2020-10  supF=   9.2  p=0.127
+  base                   gasolina_refinaria   2016-11  supF=  39.6  p=0.000
+  dummies de pandemia    gasolina_consumidor  2017-03  supF=  12.3  p=0.000
+  dummies de pandemia    diesel               2017-07  supF=  25.6  p=0.000
+  dummies de pandemia    ipca_transportes     2017-03  supF=  12.2  p=0.010
+  dummies de pandemia    ipca_geral           2018-08  supF=  10.5  p=0.050
+  dummies de pandemia    gasolina_refinaria   2016-12  supF=  37.8  p=0.000
+  excluindo 2020         gasolina_consumidor  2017-03  supF=  12.3  p=0.017
+  excluindo 2020         diesel               2017-07  supF=  25.6  p=0.003
+  excluindo 2020         ipca_transportes     2017-03  supF=  12.2  p=0.000
+  excluindo 2020         ipca_geral           2018-08  supF=  10.5  p=0.084
+  excluindo 2020         gasolina_refinaria   2016-12  supF=  37.8  p=0.000
+  choque winsorizado     gasolina_consumidor  2016-10  supF=  12.6  p=0.003
+  choque winsorizado     diesel               2021-01  supF=  26.5  p=0.010
+  choque winsorizado     ipca_transportes     2017-03  supF=  12.2  p=0.007
+  choque winsorizado     ipca_geral           2018-08  supF=   9.2  p=0.077
+  choque winsorizado     gasolina_refinaria   2016-12  supF=  52.0  p=0.000
+
+=== data estimada por variante ===
+variante                base choque winsorizado dummies de pandemia excluindo 2020
+variavel                                                                          
+diesel               2021-01            2021-01             2017-07        2017-07
+gasolina_consumidor  2021-01            2016-10             2017-03        2017-03
+gasolina_refinaria   2016-11            2016-12             2016-12        2016-12
+ipca_geral           2020-10            2018-08             2018-08        2018-08
+ipca_transportes     2021-02            2017-03             2017-03        2017-03
+
+=== p-valor por variante ===
+variante              base  choque winsorizado  dummies de pandemia  excluindo 2020
+variavel                                                                           
+diesel               0.010               0.010                0.000           0.003
+gasolina_consumidor  0.023               0.003                0.000           0.017
+gasolina_refinaria   0.000               0.000                0.000           0.000
+ipca_geral           0.127               0.077                0.050           0.084
+ipca_transportes     0.010               0.007                0.010           0.000

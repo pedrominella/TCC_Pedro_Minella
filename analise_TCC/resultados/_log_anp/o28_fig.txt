@@ -1,0 +1,3 @@
+  figura tz_amostra_cheia
+  figura tz_por_regime
+  figura tz_resumo

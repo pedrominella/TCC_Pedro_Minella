@@ -1,0 +1,5 @@
+   repasse_internacional.png
+   Brasil 0.959 | posicao 8 de 65 | percentil 89
+   desregulado  n=15  mediana 0.870  media 0.750
+   regulado     n=50  mediana 0.351  media 0.408
+   mediana mundial 0.531 | mediana LAC 0.746

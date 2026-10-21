@@ -1,0 +1,61 @@
+OXFORD STRINGENCY, BRASIL, MENSAL
+  36 meses, de 2020-01 a 2022-12 | faixa 0.5 a 80.5
+  nos dez meses de mar a dez/2020: faixa 44.0 a 80.5, media 68.2
+  valores mensais: 03/20 44, 04/20 75, 05/20 81, 06/20 77, 07/20 80, 08/20 72, 09/20 69, 10/20 63, 11/20 58, 12/20 64
+  fora da janela o indice ainda cobre 26 meses (2020-01 a 2022-12), media 40.9
+
+RESIDUO DE IMPACTO NOS DEZ MESES DE PANDEMIA (ipca_geral, h = 0)
+  janela      10 de 10 resíduos exatamente zero | desvio nesses meses 0.000
+  ox_covid     0 de 10 resíduos exatamente zero | desvio nesses meses 0.251
+  ox_janela    0 de 10 resíduos exatamente zero | desvio nesses meses 0.251
+  ox_cheio     0 de 10 resíduos exatamente zero | desvio nesses meses 0.254
+  contagem     0 de 10 resíduos exatamente zero | desvio nesses meses 0.248
+
+============================================================================================
+HORIZONTE h = 0      b_pos (p) | Wald p
+                                    janela              ox_covid             ox_janela
+ipca_geral             0.176 (0.000) 0.001   0.088 (0.003) 0.016   0.088 (0.003) 0.016
+ipca_transportes       0.675 (0.000) 0.000   0.370 (0.000) 0.004   0.370 (0.000) 0.004
+gasolina_consumidor    2.031 (0.000) 0.000   1.137 (0.000) 0.002   1.137 (0.000) 0.002
+diesel                 2.308 (0.000) 0.000   0.957 (0.008) 0.039   0.957 (0.008) 0.039
+gasolina_refinaria     3.971 (0.000) 0.000   3.105 (0.000) 0.000   3.105 (0.000) 0.000
+etanol                 1.358 (0.039) 0.204   1.034 (0.000) 0.112   1.034 (0.000) 0.112
+  parametros: janela K=43 | ox_janela K=34
+
+============================================================================================
+HORIZONTE h = 1      b_pos (p) | Wald p
+                                    janela              ox_covid             ox_janela
+ipca_geral             0.356 (0.000) 0.000   0.215 (0.000) 0.004   0.220 (0.000) 0.003
+ipca_transportes       1.366 (0.000) 0.000   0.831 (0.000) 0.000   0.831 (0.000) 0.000
+gasolina_consumidor    3.977 (0.000) 0.000   2.660 (0.000) 0.000   2.645 (0.000) 0.000
+diesel                 4.646 (0.000) 0.000   2.457 (0.000) 0.001   2.447 (0.000) 0.001
+gasolina_refinaria     5.824 (0.000) 0.000   5.226 (0.000) 0.000   5.237 (0.000) 0.000
+etanol                 3.331 (0.002) 0.053   2.778 (0.000) 0.014   2.762 (0.000) 0.014
+  parametros: janela K=43 | ox_janela K=34
+
+============================================================================================
+HORIZONTE h = 3      b_pos (p) | Wald p
+                                    janela              ox_covid             ox_janela
+ipca_geral             0.314 (0.011) 0.160   0.288 (0.000) 0.089   0.304 (0.000) 0.071
+ipca_transportes       1.194 (0.000) 0.006   1.109 (0.000) 0.002   1.119 (0.000) 0.003
+gasolina_consumidor    2.732 (0.015) 0.028   2.998 (0.000) 0.000   2.961 (0.000) 0.001
+diesel                 4.318 (0.000) 0.001   3.444 (0.000) 0.001   3.422 (0.000) 0.003
+gasolina_refinaria     2.326 (0.074) 0.048   3.638 (0.000) 0.000   3.722 (0.000) 0.002
+etanol                 2.715 (0.045) 0.238   3.049 (0.000) 0.098   3.025 (0.000) 0.100
+  parametros: janela K=43 | ox_janela K=34
+
+============================================================================================
+EFEITO DE DEIXAR O INDICE CORRER ATE DEZ/2022 (h = 0)
+                         ox_covid     ox_cheio    diferença
+ipca_geral                  0.088        0.084       -0.004
+ipca_transportes            0.370        0.364       -0.006
+gasolina_consumidor         1.137        1.145        0.007
+diesel                      0.957        0.943       -0.013
+gasolina_refinaria          3.105        3.102       -0.003
+etanol                      1.034        1.043        0.009
+
+============================================================================================
+DATA DE QUEBRA: sup-Wald conjunto das quatro principais, h = 0
+  janela     pico 03/2017 (67.5) | mar/2017 = 67.5 | 5 maiores: 03/17 68, 02/17 67, 01/17 67, 04/17 66, 05/17 66
+  ox_covid   pico 02/2021 (53.0) | mar/2017 = 27.8 | 5 maiores: 02/21 53, 11/20 52, 12/20 52, 10/20 52, 01/21 52
+  ox_janela  pico 02/2021 (53.0) | mar/2017 = 27.8 | 5 maiores: 02/21 53, 11/20 52, 12/20 52, 10/20 52, 01/21 52

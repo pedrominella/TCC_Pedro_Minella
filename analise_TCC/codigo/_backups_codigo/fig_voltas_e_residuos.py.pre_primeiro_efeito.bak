@@ -1,0 +1,169 @@
+# -*- coding: utf-8 -*-
+"""
+DUAS FIGURAS
+
+  voltas_esquema.png    esquema dos dois caminhos pelos quais o choque alcanca o
+                        IPCA, com a inversao da proporcao ao longo dos meses.
+                        Responde aos comentarios 3, 5 e 37.
+
+  residuos_refinaria.png  residuos da equacao de impacto da gasolina na refinaria,
+                        separados por regime, e correlograma. Da suporte visual ao
+                        teste de Breusch-Godfrey da Tabela 7. Responde ao 41.
+
+Uso: python fig_voltas_e_residuos.py
+"""
+import sys, warnings
+import numpy as np, pandas as pd, statsmodels.api as sm
+from pathlib import Path
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+warnings.filterwarnings("ignore")
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import lp_base_nova as L
+from onda2_bandas_placebo import _amostra
+
+PASTA = Path(__file__).resolve().parent.parent
+SAIDA = PASTA / "resultados"; FIGS = PASTA / "figuras"
+CORAL, TEAL, CINZA = "#D85A30", "#1D9E75", "#8C8C8C"
+
+
+# ══════════════════════════════════════════════ figura 1
+def caixa(ax, x, y, w, h, titulo, sub, cor, fc):
+    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.012",
+                                fc=fc, ec=cor, lw=1.3, zorder=2))
+    ax.text(x + w/2, y + h*0.62, titulo, ha="center", va="center",
+            fontsize=9.5, color=cor, zorder=3)
+    ax.text(x + w/2, y + h*0.28, sub, ha="center", va="center",
+            fontsize=8, color=cor, zorder=3)
+
+
+def seta(ax, x1, y1, x2, y2, cor="0.35"):
+    ax.add_patch(FancyArrowPatch((x1, y1), (x2, y2), arrowstyle="-|>",
+                                 mutation_scale=11, lw=1.1, color=cor, zorder=1))
+
+
+def esquema():
+    t = pd.read_excel(SAIDA / "onda2_7b_voltas_por_regime.xlsx",
+                      sheet_name="decomposicao")
+    t = t[(t.cenario == "central") & (t.h.isin([0, 1, 2, 3, 6]))]
+    d = t[t.regime == "posterior"].sort_values("h")
+    ant = t[t.regime == "anterior"].sort_values("h")
+
+    fig, ax = plt.subplots(1, 2, figsize=(11.0, 4.2),
+                           gridspec_kw={"width_ratios": [1.35, 1]})
+
+    a = ax[0]; a.set_xlim(0, 1); a.set_ylim(0, 1); a.axis("off")
+    caixa(a, 0.01, 0.42, 0.24, 0.17, "Choque no petróleo", "+10,7% no Brent",
+          "#444441", "#F1EFE8")
+    caixa(a, 0.30, 0.42, 0.24, 0.17, "Combustível sobe", "gasolina, diesel, etanol",
+          "#854F0B", "#FAEEDA")
+    seta(a, 0.25, 0.505, 0.295, 0.505)
+    caixa(a, 0.62, 0.68, 0.36, 0.17, "Primeira volta",
+          "o combustível está na cesta", CORAL, "#FAECE7")
+    caixa(a, 0.62, 0.13, 0.36, 0.17, "Segunda volta",
+          "frete e insumos", TEAL, "#E1F5EE")
+    seta(a, 0.545, 0.545, 0.615, 0.735, CORAL)
+    seta(a, 0.545, 0.465, 0.615, 0.275, TEAL)
+    a.text(0.80, 0.62, "aritmética: o índice sobe\nsem outro preço mudar",
+           ha="center", va="top", fontsize=8, color=CORAL)
+    a.text(0.80, 0.10, "econômica: preços que não são\ncombustível também sobem",
+           ha="center", va="top", fontsize=8, color=TEAL)
+    a.set_title("Os dois caminhos do choque até o IPCA", fontsize=10.5, loc="left")
+
+    b = ax[1]
+    y = np.arange(len(d))[::-1]
+    tot = d.efeito_total.values
+    pv = d.primeira_volta.values / tot
+    b.barh(y, pv, color=CORAL, height=0.6, label="primeira volta")
+    b.barh(y, 1 - pv, left=pv, color=TEAL, height=0.6, label="segunda volta")
+    for k, (yy, p_, t_) in enumerate(zip(y, pv, tot)):
+        b.text(0.02, yy, f"{p_*100:.0f}%", va="center", ha="left",
+               fontsize=8.5, color="#712B13")
+        b.text(1.02, yy, f"total {t_:.3f}".replace(".", ","), va="center",
+               ha="left", fontsize=8, color="0.3")
+    b.set_yticks(y); b.set_yticklabels([f"h = {int(h)}" for h in d.h], fontsize=9)
+    b.set_xlim(0, 1); b.set_xticks([0, 0.25, 0.5, 0.75, 1])
+    b.set_clip_on(False)
+    b.set_xticklabels(["0", "25%", "50%", "75%", "100%"], fontsize=8)
+    b.set_xlabel("participação no efeito total", fontsize=9)
+    b.legend(fontsize=8, loc="lower center", bbox_to_anchor=(0.5, -0.32), ncol=2,
+             frameon=False)
+    for yy, ta in zip(y, ant.efeito_total.values):
+        b.text(1.30, yy, f"({ta:.3f})".replace(".", ","), va="center", ha="left",
+               fontsize=7.6, color="0.55")
+    b.text(1.02, y[0] + 0.72, "total, regime\nposterior", fontsize=7.4, color="0.3",
+           va="bottom", linespacing=1.25)
+    b.text(1.30, y[0] + 0.72, "(anterior)", fontsize=7.4, color="0.55", va="bottom")
+    b.set_title("A composição se inverte com o tempo", fontsize=10.5, loc="left", pad=15)
+    b.text(0, 1.02, "regime posterior a março de 2017", transform=b.transAxes,
+           fontsize=8.2, color="0.35", va="bottom")
+    for s in ["top", "right"]: b.spines[s].set_visible(False)
+
+    fig.tight_layout()
+    arq = FIGS / "voltas_esquema.png"
+    fig.savefig(arq, dpi=150, bbox_inches="tight"); plt.close(fig)
+    print(f"  {arq.name}")
+
+
+# ══════════════════════════════════════════════ figura 2
+def residuos():
+    b, dum, pand = L.carregar_pandemia("corrigida")
+    b["pos"] = L.regime(b.Data, L.DATA_CORTE_FINAL)
+    nome = "gasolina_refinaria"
+    d = b.copy()
+    for lag in range(1, L.LAGS + 1):
+        d[f"y_lag{lag}"] = d[f"dlog_{nome}"].shift(lag)
+    din = []
+    for lag in range(1, L.LAGS + 1):
+        din += [f"y_lag{lag}", f"choque_petroleo_lag{lag}"] + \
+               [f"{c}_lag{lag}" for c in L.CONTROLES]
+    d["__y"] = L.y_acum(d, nome, 0)
+    regs = ["choque_petroleo"] + din + dum + pand(d, 0)
+    am = _amostra(d, regs + ["pos"])
+    X = sm.add_constant(am[regs], has_constant="add")
+    r = sm.OLS(am["__y"], X).fit()
+    am = am.assign(res=r.resid.values)
+
+    fig, ax = plt.subplots(1, 2, figsize=(11.0, 3.9),
+                           gridspec_kw={"width_ratios": [1.5, 1]})
+    for rot, sel, cor in [("antes de mar/2017", am.pos == 0, "#5F6549"),
+                          ("depois de mar/2017", am.pos == 1, "#9E3D25")]:
+        s = am[sel]
+        ax[0].plot(s.Data, s.res, color=cor, lw=1.1, marker="o", ms=2.2, label=rot)
+    ax[0].axhline(0, color="0.3", lw=0.9)
+    ax[0].axvline(pd.Timestamp(L.DATA_CORTE_FINAL), color="0.35", lw=0.9, ls=":")
+    ax[0].set_ylabel("resíduo, pontos percentuais", fontsize=9)
+    ax[0].legend(fontsize=8, loc="upper left"); ax[0].tick_params(labelsize=8)
+    ax[0].set_title("Resíduos da equação de impacto da gasolina A na refinaria",
+                    fontsize=10, loc="left")
+
+    for rot, sel, cor in [("antes", am.pos == 0, "#5F6549"),
+                          ("depois", am.pos == 1, "#9E3D25")]:
+        u = am.loc[sel, "res"].values
+        ac = [pd.Series(u).autocorr(l) for l in range(1, 13)]
+        desl = -0.16 if rot == "antes" else 0.16
+        ax[1].bar(np.arange(1, 13) + desl, ac, width=0.32, color=cor, label=rot)
+    lim = 1.96 / np.sqrt(len(am))
+    ax[1].axhline(lim, color="0.4", ls="--", lw=0.9)
+    ax[1].axhline(-lim, color="0.4", ls="--", lw=0.9)
+    ax[1].axhline(0, color="0.3", lw=0.9)
+    ax[1].set_xlabel("defasagem, em meses", fontsize=9)
+    ax[1].set_ylabel("autocorrelação", fontsize=9)
+    ax[1].set_xticks(range(1, 13)); ax[1].tick_params(labelsize=8)
+    ax[1].legend(fontsize=8); ax[1].set_title("Autocorrelação residual por regime",
+                                              fontsize=10, loc="left")
+    fig.tight_layout()
+    arq = FIGS / "residuos_refinaria.png"
+    fig.savefig(arq, dpi=150, bbox_inches="tight"); plt.close(fig)
+    print(f"  {arq.name}")
+    for rot, sel in [("antes", am.pos == 0), ("depois", am.pos == 1)]:
+        u = am.loc[sel, "res"]
+        print(f"  {rot:7s} n={len(u):3d}  desvio {u.std():5.2f}  "
+              f"autocorr(1) {u.autocorr(1):+.3f}")
+
+
+if __name__ == "__main__":
+    esquema(); residuos()

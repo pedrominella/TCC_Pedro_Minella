@@ -1,0 +1,2 @@
+  figura ipca_geral
+  figura ipca_transportes

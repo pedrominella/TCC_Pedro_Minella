@@ -1,0 +1,9 @@
+figuras do corte alternativo:
+   corte_alternativo_impacto.png
+   corte_alternativo_completo.png
+
+  conferencia, resposta no impacto:
+    ipca_geral             out/2016  0.155 | mar/2017  0.176
+    ipca_transportes       out/2016  0.637 | mar/2017  0.675
+    gasolina_consumidor    out/2016  1.952 | mar/2017  2.031
+    diesel                 out/2016  2.184 | mar/2017  2.308

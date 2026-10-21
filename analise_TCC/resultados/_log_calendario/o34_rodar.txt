@@ -1,0 +1,56 @@
+  gasolina_refinaria
+  gasolina_consumidor
+  diesel
+  ipca_geral
+
+=== (a) com que frequencia o preco muda? ===
+                    pct_meses_parado        variacao_absoluta_mediana      
+regime                           pos    pre                       pos   pre
+variavel                                                                   
+diesel                          1.94  17.16                      1.43  0.28
+gasolina_consumidor             0.97   5.33                      1.57  0.55
+gasolina_refinaria              0.00  16.57                      4.27  0.17
+ipca_geral                      2.91   4.14                      0.38  0.47
+
+=== (b) Breusch-Godfrey robusto em h=0, por subamostra (p-valor) ===
+                               n  bg_robusto_p_q1  bg_robusto_p_q6  bg_robusto_p_q12  coef_choque
+variavel            amostra                                                                      
+gasolina_refinaria  cheia    269            0.112            0.515             0.586        1.586
+                    pre      166            0.691            0.864             0.889        0.431
+                    pos      103            0.887            0.386             0.194        4.575
+gasolina_consumidor cheia    269            0.078            0.704             0.818        0.786
+                    pre      166            0.402            0.603             0.496        0.351
+                    pos      103            0.160            0.454             0.159        2.115
+diesel              cheia    269            0.039            0.353             0.513        0.845
+                    pre      166            0.028            0.313             0.646        0.295
+                    pos      103            0.994            0.160             0.000        2.264
+ipca_geral          cheia    269            0.048            0.355             0.642        0.057
+                    pre      166            0.408            0.171             0.130        0.004
+                    pos      103            0.221            0.040             0.014        0.203
+
+=== (c) coeficiente por numero de defasagens, dentro de cada regime ===
+p                               1      2      3      6      12
+variavel            amostra                                   
+diesel              cheia    0.784  0.807  0.845  0.906  0.895
+                    pos      2.341  2.335  2.264  1.900  2.425
+                    pre      0.205  0.238  0.295  0.344  0.286
+gasolina_consumidor cheia    0.713  0.720  0.786  0.759  0.833
+                    pos      2.105  1.938  2.115  1.872  1.083
+                    pre      0.239  0.285  0.351  0.345  0.449
+gasolina_refinaria  cheia    1.702  1.628  1.586  1.590  1.525
+                    pos      4.808  4.811  4.575  4.231  3.687
+                    pre      0.374  0.419  0.431  0.478  0.407
+ipca_geral          cheia    0.043  0.045  0.057  0.048  0.055
+                    pos      0.183  0.173  0.203  0.187  0.177
+                    pre     -0.003 -0.002  0.004  0.000  0.029
+
+--- veredito para a gasolina na refinaria ---
+  preco parado em 16.6% dos meses antes, 0.0% depois
+  variacao mensal mediana 0.172% antes, 4.265% depois
+  BG rejeita no regime ANTERIOR (p = 0.691, 0.864, 0.889)
+  BG NAO rejeita no POSTERIOR  (p = 0.887, 0.386, 0.194)
+  coeficiente: 0.431 (p 0.039) antes, 4.575 (p 0.000) depois
+
+  => a ma especificacao esta no regime de preco ADMINISTRADO, e desaparece
+     quando a Petrobras passa a reajustar com frequencia. Nao e defeito da
+     estimacao: e o proprio objeto de estudo aparecendo no diagnostico.

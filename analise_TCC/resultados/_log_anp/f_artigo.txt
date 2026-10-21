@@ -1,0 +1,12 @@
+figuras da versao de artigo:
+   fig1_resposta_acumulada.png
+   fig2_canal.png
+     h=0  choque_pre  total  0.008 | canal  0.004 | parcela   47.7%
+     h=0  choque_pos  total  0.153 | canal  0.108 | parcela   70.7%
+     h=1  choque_pre  total  0.038 | canal  0.005 | parcela   13.5%
+     h=1  choque_pos  total  0.313 | canal  0.216 | parcela   69.1%
+     h=3  choque_pre  total  0.120 | canal  0.006 | parcela    4.6%
+     h=3  choque_pos  total  0.255 | canal  0.172 | parcela   67.5%
+     h=6  choque_pre  total  0.098 | canal  0.073 | parcela   74.5%
+     h=6  choque_pos  total  0.137 | canal  0.016 | parcela   11.9%
+   fig3_comparacao_datas.png

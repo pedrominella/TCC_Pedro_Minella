@@ -1,0 +1,8 @@
+== A) QUANTILICA
+   quantilica: gasolina_refinaria      24s
+   quantilica: gasolina_consumidor     50s
+   quantilica: etanol                  69s
+   quantilica: diesel                  98s
+   quantilica: ipca_geral              2736s
+   quantilica: ipca_transportes        5339s
+saida em C:\Users\pedro\OneDrive\Documentos\TCC_python\TCC_artigo_v2\resultados\modelo_11_alternativos

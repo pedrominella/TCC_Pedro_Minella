@@ -1,0 +1,28 @@
+  gasolina_refinaria
+  gasolina_consumidor
+  etanol
+  diesel
+  ipca_geral
+  ipca_transportes
+
+identidade acumulada = soma das mensais: desvio maximo 1.78e-15  (OK)
+
+=== REGIME POSTERIOR, decomposicao do acumulado de tres meses
+variavel                  acumulado     mes 0     mes 1     mes 2     mes 3    0 e 1
+gasolina_refinaria         4.489***  5.051***  3.278*** -1.094    -2.746***     186%
+gasolina_consumidor        2.732**   1.765***  1.872*** -0.203    -0.702*       133%
+etanol                     2.715**   1.174*    2.099*** -0.087    -0.471        121%
+diesel                     4.318***  1.991***  2.006***  0.794*   -0.473         93%
+ipca_geral                 0.314**   0.127***  0.182***  0.020    -0.016         99%
+ipca_transportes           1.194***  0.586***  0.672***  0.062    -0.125        105%
+
+=== REGIME ANTERIOR, decomposicao do acumulado de tres meses
+variavel                  acumulado     mes 0     mes 1     mes 2     mes 3    0 e 1
+gasolina_refinaria         0.081     0.191    -0.093     0.134    -0.151        121%
+gasolina_consumidor        0.118     0.181    -0.009    -0.134     0.080        146%
+etanol                     0.834     0.325     0.636    -0.161     0.034        115%
+diesel                     0.068     0.170    -0.111    -0.020     0.029         87%
+ipca_geral                 0.101     0.000     0.029     0.027     0.045         28%
+ipca_transportes           0.115     0.047     0.025     0.007     0.036         62%
+
+gravado: C:\Users\pedro\OneDrive\Documentos\TCC_python\TCC_artigo_v2\resultados\onda2_6b_decomposicao_por_regime.xlsx
